@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       tools:parentTag="RelativeLayout">
+
+    <TextView
+        android:id="@+id/stepper_circle"
+        android:layout_width="@dimen/vertical_stepper_circle_size"
+        android:layout_height="@dimen/vertical_stepper_circle_size"
+        android:layout_marginTop="@dimen/vertical_stepper_circle_margin_top"
+        android:layout_marginLeft="@dimen/vertical_stepper_circle_left_margin"
+        android:layout_marginStart="@dimen/vertical_stepper_circle_left_margin"
+        android:layout_marginRight="@dimen/vertical_stepper_circle_right_margin"
+        android:layout_marginEnd="@dimen/vertical_stepper_circle_right_margin"
+        android:backgroundTint="@color/vertical_stepper_circle_active_color"
+        android:gravity="center"
+        android:text="０"
+        android:textSize="@dimen/vertical_stepper_circle_text_size"
+        android:textColor="@color/vertical_stepper_circle_text"
+        android:background="@drawable/stepper_circle_background"/>
+
+    <TextView
+        android:id="@+id/work_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_toRightOf="@+id/stepper_circle"
+        android:layout_toEndOf="@id/stepper_circle"
+        android:textSize="@dimen/vertical_stepper_title"
+        android:textColor="@color/vertical_stepper_title_active"
+        android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"
+        android:text="Select an app"/>
+
+    <TextView
+        android:id="@+id/work_sub_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/stepper_circle"
+        android:layout_toEndOf="@id/stepper_circle"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_below="@+id/work_title"
+        android:textSize="@dimen/vertical_stepper_sub_title"
+        android:textColor="@color/vertical_stepper_sub_title_active"
+        android:layout_marginBottom="@dimen/vertical_stepper_sub_title_bottom_margin"
+        android:text="Summary if needed..."/>
+
+    <FrameLayout
+        android:id="@+id/content_view_container"
+        android:layout_toRightOf="@+id/stepper_circle"
+        android:layout_toEndOf="@id/stepper_circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_below="@+id/work_sub_title"
+        android:layout_marginBottom="@dimen/vertical_stepper_bottom_margin"/>
+
+</merge>

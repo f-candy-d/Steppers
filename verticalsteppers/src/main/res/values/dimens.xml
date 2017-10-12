@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="vertical_stepper_circle_size">40dp</dimen>
+    <dimen name="vertical_stepper_circle_margin_top">4dp</dimen>
+    <dimen name="vertical_stepper_circle_text_size">16sp</dimen>
+    <dimen name="vertical_stepper_circle_left_margin">24dp</dimen>
+    <dimen name="vertical_stepper_circle_right_margin">12dp</dimen>
+    <dimen name="vertical_stepper_connection_line_width">1dp</dimen>
+    <dimen name="vertical_stepper_connection_line_top_margin">8dp</dimen>
+    <dimen name="vertical_stepper_connection_line_bottom_margin">4dp</dimen>
+    <dimen name="vertical_stepper_bottom_margin">24dp</dimen>
+
+    <dimen name="vertical_stepper_title">14sp</dimen>
+    <dimen name="vertical_stepper_title_bottom_margin">4dp</dimen>
+    <dimen name="vertical_stepper_sub_title">12sp</dimen>
+    <dimen name="vertical_stepper_sub_title_bottom_margin">12dp</dimen>
+</resources>
