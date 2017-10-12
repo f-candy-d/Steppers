@@ -4,14 +4,43 @@ package com.f_candy_d.verticalsteppers;
  * Created by daichi on 10/12/17.
  */
 
-public class VerticalStepperStatus {
+public final class VerticalStepperStatus {
 
     // Is a stepper active or inactive
-    boolean isActive;
+    private boolean isActive;
     // Is a stepper marked as completed or not
-    boolean isCompleted;
+    private boolean isCompleted;
     // Is a stepper's content view expanded or collapsed
-    boolean isExpanded;
+    private boolean isExpanded;
+
+    /**
+     * Setters have package-private visibility,
+     * Getters have public visibility
+     */
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    void setCompleted(boolean completed) {
+        isCompleted = completed;
+    }
+
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    void setExpanded(boolean expanded) {
+        isExpanded = expanded;
+    }
 
     public VerticalStepperStatus() {}
 
@@ -19,6 +48,17 @@ public class VerticalStepperStatus {
         this.isActive = isActive;
         this.isCompleted = isCompleted;
         this.isExpanded = isExpanded;
+    }
+
+    public VerticalStepperStatus(VerticalStepperStatus source) {
+        copy(source);
+    }
+
+    // This method has package-private visibility
+    void copy(VerticalStepperStatus source) {
+        this.isActive = source.isActive;
+        this.isCompleted = source.isCompleted;
+        this.isExpanded = source.isExpanded;
     }
 
     @Override

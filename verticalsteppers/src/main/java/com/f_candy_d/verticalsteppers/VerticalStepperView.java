@@ -12,7 +12,10 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,7 +26,7 @@ import android.widget.TextView;
  */
 class VerticalStepperView extends RelativeLayout {
 
-    private int mStepNumber;
+    private String mStepLabel;
     private String mTitle;
     private String mSubTitle;
 
@@ -42,7 +45,9 @@ class VerticalStepperView extends RelativeLayout {
     // UI
     private TextView mTitleView;
     private TextView mSubTitleView;
-    private TextView mStepperCircleView;
+    private TextView mStepperCircleTextView;
+    private ImageView mStepperCircleImgView;
+    private FrameLayout mStepperCircleLayout;
     private FrameLayout mContentViewContainer;
     private View mContentView;
 
@@ -86,7 +91,7 @@ class VerticalStepperView extends RelativeLayout {
 
         mTitle = a.getString(R.styleable.VerticalStepperView_title);
         mSubTitle = a.getString(R.styleable.VerticalStepperView_subTitle);
-        mStepNumber = a.getInteger(R.styleable.VerticalStepperView_stepNumber, mStepNumber);
+        mStepLabel = a.getString(R.styleable.VerticalStepperView_stepLabel);
         // Load layout's resource id; -> https://stackoverflow.com/questions/25303979/custom-xml-attribute-to-a-layout-reference
         // And id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
         final int contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_contentViewLayout, 0);
@@ -100,7 +105,9 @@ class VerticalStepperView extends RelativeLayout {
 
         mTitleView = findViewById(R.id.work_title);
         mSubTitleView = findViewById(R.id.work_sub_title);
-        mStepperCircleView = findViewById(R.id.stepper_circle);
+        mStepperCircleTextView = findViewById(R.id.stepper_circle_text);
+        mStepperCircleImgView = findViewById(R.id.stepper_circle_icon);
+        mStepperCircleLayout = findViewById(R.id.stepper_circle_layout);
         mContentViewContainer = findViewById(R.id.content_view_container);
 
         // # Inflate a content view if an user specified it in a layout XML file
@@ -127,7 +134,7 @@ class VerticalStepperView extends RelativeLayout {
 
         mTitleView.setText(mTitle);
         mSubTitleView.setText(mSubTitle);
-        mStepperCircleView.setText(String.valueOf(mStepNumber));
+        mStepperCircleTextView.setText(String.valueOf(mStepLabel));
     }
 
     @Override
@@ -146,8 +153,8 @@ class VerticalStepperView extends RelativeLayout {
 
         // # Connection Line
 
-        int connectionLineX = mStepperCircleView.getLeft() + mStepperCircleView.getWidth() / 2;
-        int connectionLineStartY = mStepperCircleView.getBottom() + mStepperConnectionLineTopMargin;
+        int connectionLineX = mStepperCircleLayout.getLeft() + mStepperCircleLayout.getWidth() / 2;
+        int connectionLineStartY = mStepperCircleLayout.getBottom() + mStepperConnectionLineTopMargin;
         int connectionLineEndY = contentHeight - mStepperConnectionLineBottomMargin;
 
         canvas.drawLine(connectionLineX, connectionLineStartY, connectionLineX, connectionLineEndY, mStepperConnectionLinePaint);
@@ -163,9 +170,13 @@ class VerticalStepperView extends RelativeLayout {
         mSubTitleView.setText(subTitle);
     }
 
-    public void setStepNumber(int stepNumber) {
-        mStepNumber = stepNumber;
-        mStepperCircleView.setText(String.valueOf(stepNumber));
+    public void setStepLabel(int number) {
+        setStepLabel(String.valueOf(number));
+    }
+
+    public void setStepLabel(String text) {
+        mStepLabel = text;
+        mStepperCircleTextView.setText(text);
     }
 
     public void setContentView(View view) {
@@ -187,6 +198,11 @@ class VerticalStepperView extends RelativeLayout {
         return mContentViewContainer;
     }
 
+    public void applyStatus(VerticalStepperStatus status, boolean enforceUpdates) {
+        setIsActiveUi(status.isActive(), enforceUpdates);
+        setIsCompletedUi(status.isCompleted(), enforceUpdates);
+    }
+
     // Default is TRUE
     private boolean mIsActiveUi = true;
 
@@ -195,8 +211,13 @@ class VerticalStepperView extends RelativeLayout {
 
         // # Stepper Circle Color
 
-        Drawable bg = DrawableCompat.wrap(mStepperCircleView.getBackground());
         int color = (isActiveUi) ? mStepperCircleActiveColor : mStepperCircleInactiveColor;
+
+        Drawable bg = DrawableCompat.wrap(mStepperCircleTextView.getBackground());
+        DrawableCompat.setTint(bg, color);
+        DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
+
+        bg = DrawableCompat.wrap(mStepperCircleImgView.getBackground());
         DrawableCompat.setTint(bg, color);
         DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
 
@@ -217,9 +238,53 @@ class VerticalStepperView extends RelativeLayout {
     public void setIsCompletedUi(boolean isCompletedUi, boolean enforceUpdate) {
         if (isCompletedUi == mIsCompletedUi && !enforceUpdate) return;
 
-
+        // TODO; ANIMATE WHEN TOGGLE STEPPER CIRCLES
+        if (isCompletedUi) {
+//            toggleViewsWithScaleAnimation(mStepperCircleTextView, mStepperCircleImgView);
+            mStepperCircleTextView.setVisibility(INVISIBLE);
+            mStepperCircleImgView.setVisibility(VISIBLE);
+        } else {
+//            toggleViewsWithScaleAnimation(mStepperCircleImgView, mStepperCircleTextView);
+            mStepperCircleTextView.setVisibility(VISIBLE);
+            mStepperCircleImgView.setVisibility(INVISIBLE);
+        }
 
         // Update
         mIsCompletedUi = isCompletedUi;
+    }
+
+    private void toggleViewsWithScaleAnimation(final View hiddenView, final View revealView) {
+        revealView.setVisibility(INVISIBLE);
+        hiddenView.setVisibility(VISIBLE);
+        ScaleAnimation scaleUpAnimation = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        scaleUpAnimation.setDuration(150);
+        scaleUpAnimation.setRepeatCount(0);
+        scaleUpAnimation.setFillAfter(true);
+        scaleUpAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                revealView.setScaleX(0f);
+                revealView.setScaleY(0f);
+                hiddenView.setVisibility(INVISIBLE);
+                revealView.setVisibility(VISIBLE);
+                ScaleAnimation scaleDownAnimation = new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                scaleDownAnimation.setDuration(150);
+                scaleDownAnimation.setRepeatCount(0);
+                scaleDownAnimation.setFillAfter(true);
+                revealView.startAnimation(scaleDownAnimation);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        hiddenView.startAnimation(scaleUpAnimation);
     }
 }

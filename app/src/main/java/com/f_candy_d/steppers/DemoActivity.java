@@ -2,7 +2,6 @@ package com.f_candy_d.steppers;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -23,13 +22,14 @@ public class DemoActivity extends AppCompatActivity {
         VerticalStepperListView listView = (VerticalStepperListView) findViewById(R.id.list);
         final Manager manager = new Manager();
         listView.build(this, manager);
+        manager.useTextAsStepLabel(true);
         manager.addSteps();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manager.expandOrCollapse();
+                manager.nextStep();
             }
         });
     }

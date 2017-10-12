@@ -9,7 +9,7 @@ import android.util.AttributeSet;
  * Created by daichi on 10/12/17.
  */
 
-public class VerticalStepperListView extends RecyclerView {
+public final class VerticalStepperListView extends RecyclerView {
 
     public VerticalStepperListView(Context context) {
         super(context);

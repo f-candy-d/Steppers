@@ -21,16 +21,23 @@ public class Manager extends VerticalStepperManager {
     public void addSteps() {
         ArrayList<VerticalStepperStatus> statuses = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
-            statuses.add(new VerticalStepperStatus(false, false, false));
+            if (i == 0) {
+                statuses.add(new VerticalStepperStatus(true, true, true));
+            } else {
+                statuses.add(new VerticalStepperStatus(false, false, false));
+            }
         }
         notifyStepDataInserted(0, statuses);
     }
 
     private int i = 0;
-    public void expandOrCollapse() {
-        notifyCollapseStepContents(i % 10);
-        notifyExpandStepContents((i+1) % 10);
-        ++i;
+    private VerticalStepperStatus afterCurrentStepStatus = new VerticalStepperStatus(true, true, false);
+    private VerticalStepperStatus afterNextStepStatus = new VerticalStepperStatus(true, false, true);
+    public void nextStep() {
+        if (i < getStepCount()) {
+            notifyMoveToNextStep(i, afterCurrentStepStatus, afterNextStepStatus);
+            ++i;
+        }
     }
 
     private static final int TAG_STEP_POSITION = -123445;
@@ -44,6 +51,32 @@ public class Manager extends VerticalStepperManager {
             @Override
             public void onClick(View view) {
                 notifyCollapseStepContents((Integer) content.getTag(TAG_STEP_POSITION));
+            }
+        });
+
+        content.findViewById(R.id.toggle_complete_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (Integer) content.getTag(TAG_STEP_POSITION);
+                VerticalStepperStatus status = getStepStatusAt(position);
+                if (status.isCompleted()) {
+                    notifyIncompleteStep(position);
+                } else {
+                    notifyCompleteStep(position);
+                }
+            }
+        });
+
+        content.findViewById(R.id.toggle_active_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (Integer) content.getTag(TAG_STEP_POSITION);
+                VerticalStepperStatus status = getStepStatusAt(position);
+                if (status.isActive()) {
+                    notifyInactivateStep(position);
+                } else {
+                    notifyActivateStep(position);
+                }
             }
         });
 
@@ -62,6 +95,32 @@ public class Manager extends VerticalStepperManager {
             }
         });
 
+        content.findViewById(R.id.toggle_complete_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (Integer) content.getTag(TAG_STEP_POSITION);
+                VerticalStepperStatus status = getStepStatusAt(position);
+                if (status.isCompleted()) {
+                    notifyIncompleteStep(position);
+                } else {
+                    notifyCompleteStep(position);
+                }
+            }
+        });
+
+        content.findViewById(R.id.toggle_active_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (Integer) content.getTag(TAG_STEP_POSITION);
+                VerticalStepperStatus status = getStepStatusAt(position);
+                if (status.isActive()) {
+                    notifyInactivateStep(position);
+                } else {
+                    notifyActivateStep(position);
+                }
+            }
+        });
+
         return content;
     }
 
@@ -73,6 +132,16 @@ public class Manager extends VerticalStepperManager {
     @Override
     protected String getStepperSubTitle(int position) {
         return "Sub-Title at " + String.valueOf(position);
+    }
+
+    @Override
+    protected int getStepLabelNumber(int position) {
+        return position + 1;
+    }
+
+    @Override
+    protected String getStepLabelText(int position) {
+        return "S";
     }
 
     @Override

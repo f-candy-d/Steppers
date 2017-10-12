@@ -3,7 +3,7 @@
     <declare-styleable name="VerticalStepperView">
         <attr name="title" format="string"/>
         <attr name="subTitle" format="string"/>
-        <attr name="stepNumber" format="integer"/>
+        <attr name="stepLabel" format="string"/>
         <attr name="contentViewLayout" format="reference"/>
     </declare-styleable>
 </resources>

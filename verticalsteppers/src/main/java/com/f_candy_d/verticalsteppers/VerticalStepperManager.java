@@ -12,20 +12,35 @@ import java.util.List;
 
 abstract public class VerticalStepperManager {
 
-    private StepperStatusObserver mStepperStatusObserver;
+    private VerticalStepperManagerCallback mStepperStatusObserver;
+    private boolean mUseTextInStepperCircle = false;
 
     public VerticalStepperManager() {}
 
-    void setStepperStatusObserver(StepperStatusObserver stepperStatusObserver) {
+    void setCallback(VerticalStepperManagerCallback stepperStatusObserver) {
         mStepperStatusObserver = stepperStatusObserver;
+    }
+
+    boolean isUseTextInStepperCircle() {
+        return mUseTextInStepperCircle;
+    }
+
+    public void useTextAsStepLabel(boolean useTextInStepperCircle) {
+        mUseTextInStepperCircle = useTextInStepperCircle;
     }
 
     abstract protected View onCreateExpandedContentView(ViewGroup parent);
     abstract protected View onCreateCollapsedContentView(ViewGroup parent);
     abstract protected String getStepperTitle(int position);
     abstract protected String getStepperSubTitle(int position);
+    abstract protected int getStepLabelNumber(int position);
+    abstract protected String getStepLabelText(int position);
     abstract protected void onBindExpandedContentView(@NonNull View view, int position);
     abstract protected void onBindCollapsedContentView(@NonNull View view, int position);
+
+    /**
+     * DELEGATE METHODS
+     * ----------------------------------------------------------------------------- */
 
     public void notifyStepDataInserted(int position, VerticalStepperStatus status) {
         if (mStepperStatusObserver != null) {
@@ -34,62 +49,58 @@ abstract public class VerticalStepperManager {
     }
 
     public void notifyStepDataInserted(int startPosition, List<VerticalStepperStatus> statuses) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onInsertSteps(startPosition, statuses);
-        }
+        mStepperStatusObserver.onInsertSteps(startPosition, statuses);
     }
 
     public void notifyStepDataRemoved(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onRemoveStep(position);
-        }
+        mStepperStatusObserver.onRemoveStep(position);
     }
 
     public void notifyStepDataRangeRemoved(int startPosition, int count) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onRemoveStepsInRange(startPosition, count);
-        }
+        mStepperStatusObserver.onRemoveStepsInRange(startPosition, count);
     }
 
     public void notifyStepDataMoved(int fromPosition, int toPosition) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onMoveStep(fromPosition, toPosition);
-        }
+        mStepperStatusObserver.onMoveStep(fromPosition, toPosition);
     }
 
     public void notifyCompleteStep(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onCompleteStep(position);
-        }
+        mStepperStatusObserver.onCompleteStep(position);
     }
 
     public void notifyIncompleteStep(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onIncompleteStep(position);
-        }
+        mStepperStatusObserver.onIncompleteStep(position);
     }
 
     public void notifyExpandStepContents(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onExpandStepContents(position);
-        }
+        mStepperStatusObserver.onExpandStepContents(position);
     }
 
     public void notifyCollapseStepContents(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onCollapseStepContents(position);
-        }
+        mStepperStatusObserver.onCollapseStepContents(position);
     }
 
     public void notifyActivateStep(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onActivateStep(position);
-        }
+        mStepperStatusObserver.onActivateStep(position);
     }
 
     public void notifyInactivateStep(int position) {
-        if (mStepperStatusObserver != null) {
-            mStepperStatusObserver.onInactivateStep(position);
-        }
+        mStepperStatusObserver.onInactivateStep(position);
+    }
+
+    public void notifyMoveToNextStep(int position, VerticalStepperStatus afterStatusOfCurrentStep, VerticalStepperStatus afterStatusOfNextStep) {
+        mStepperStatusObserver.onMoveToNextStep(position, afterStatusOfCurrentStep, afterStatusOfNextStep);
+    }
+
+    public void notifyChangeStepStatusesInRange(int position, List<VerticalStepperStatus> statuses) {
+        mStepperStatusObserver.onChangeStepStatusesInRange(position, statuses);
+    }
+
+    public VerticalStepperStatus getStepStatusAt(int position) {
+        return mStepperStatusObserver.getStepStatusOf(position);
+    }
+
+    public int getStepCount() {
+        return mStepperStatusObserver.getStepCount();
     }
 }
