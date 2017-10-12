@@ -22,7 +22,6 @@ public class DemoActivity extends AppCompatActivity {
         VerticalStepperListView listView = (VerticalStepperListView) findViewById(R.id.list);
         final Manager manager = new Manager();
         listView.build(this, manager);
-        manager.useTextAsStepLabel(true);
         manager.addSteps();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

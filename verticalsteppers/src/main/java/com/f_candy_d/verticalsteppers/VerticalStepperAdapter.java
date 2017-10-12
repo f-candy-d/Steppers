@@ -49,7 +49,7 @@ public final class VerticalStepperAdapter
     @Override
     public StepperViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_vertical_stepper, parent, false);
+                .inflate(R.layout.list_item_vertical_stepper, parent, false);
 
         if (viewType == TYPE_EXPANDED_VIEW) {
             if (mStepperManager != null) {

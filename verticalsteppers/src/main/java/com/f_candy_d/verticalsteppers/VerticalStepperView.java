@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -187,6 +188,9 @@ class VerticalStepperView extends RelativeLayout {
         mContentView = view;
         if (view != null) {
             mContentViewContainer.addView(view);
+            mContentViewContainer.setVisibility(VISIBLE);
+        } else {
+            mContentViewContainer.setVisibility(GONE);
         }
     }
 
@@ -223,10 +227,14 @@ class VerticalStepperView extends RelativeLayout {
 
         // # Title & Sub-Title Color
 
-        color = (isActiveUi) ? mTitleActiveColor : mTitleInActiveColor;
-        mTitleView.setTextColor(color);
-        color = (isActiveUi) ? mSubTitleActiveColor : mSubTitleInactiveColor;
-        mSubTitleView.setTextColor(color);
+//        color = (isActiveUi) ? mTitleActiveColor : mTitleInActiveColor;
+//        mTitleView.setTextColor(color);
+//        color = (isActiveUi) ? mSubTitleActiveColor : mSubTitleInactiveColor;
+//        mSubTitleView.setTextColor(color);
+        int appearanceResId = (isActiveUi) ? R.style.VerticalStepperActiveTitleAppearance : R.style.VerticalStepperInactiveTitleAppearance;
+        TextViewCompat.setTextAppearance(mTitleView, appearanceResId);
+        appearanceResId = (isActiveUi) ? R.style.VerticalStepperActiveSubTitleAppearance : R.style.VerticalStepperInactiveSubTitleAppearance;
+        TextViewCompat.setTextAppearance(mSubTitleView, appearanceResId);
 
         // Update
         mIsActiveUi = isActiveUi;
