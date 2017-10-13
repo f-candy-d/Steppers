@@ -7,8 +7,8 @@
 
     <FrameLayout
         android:id="@+id/stepper_circle_layout"
-        android:layout_width="@dimen/vertical_large_stepper_circle_size"
-        android:layout_height="@dimen/vertical_large_stepper_circle_size"
+        android:layout_width="@dimen/vertical_regular_stepper_circle_size"
+        android:layout_height="@dimen/vertical_regular_stepper_circle_size"
         android:layout_marginTop="@dimen/vertical_stepper_circle_margin_top"
         android:layout_marginRight="@dimen/vertical_stepper_circle_right_margin"
         android:layout_marginEnd="@dimen/vertical_stepper_circle_right_margin"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="０"
-            android:textSize="@dimen/vertical_large_stepper_circle_text_size"
+            android:textSize="@dimen/vertical_regular_stepper_circle_text_size"
             android:textColor="@color/vertical_stepper_circle_text"
             android:background="@drawable/stepper_circle_background"/>
 
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/stepper_circle_background"
-            android:padding="@dimen/vertical_large_stepper_circle_icon_padding"
+            android:padding="@dimen/vertical_regular_stepper_circle_icon_padding"
             android:src="@drawable/ic_check"
             android:visibility="invisible"/>
 
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/vertical_stepper_circle_margin_top"
+        android:layout_marginTop="@dimen/vertical_stepper_contents_top_space"
         android:layout_marginRight="@dimen/vertical_stepper_right_space"
         android:layout_marginEnd="@dimen/vertical_stepper_right_space"
         android:layout_toRightOf="@+id/stepper_circle_layout"

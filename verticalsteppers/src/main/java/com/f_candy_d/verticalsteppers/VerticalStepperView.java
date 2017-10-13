@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.TextViewCompat;
@@ -13,8 +14,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,13 +30,9 @@ class VerticalStepperView extends RelativeLayout {
     private String mTitle;
     private String mSubTitle;
 
-    // Colors
-    private int mStepperCircleActiveColor;
-    private int mStepperCircleInactiveColor;
-    private int mTitleActiveColor;
-    private int mTitleInActiveColor;
-    private int mSubTitleActiveColor;
-    private int mSubTitleInactiveColor;
+    // Style & Status
+    private VerticalStepperStyle mStepperStyle;
+    private VerticalStepperStatus mStepperStatus;
 
     // Dimens
     private int mStepperConnectionLineTopMargin;
@@ -71,14 +66,10 @@ class VerticalStepperView extends RelativeLayout {
 
     private void init(AttributeSet attrs, int defStyle) {
 
-        // # Colors
+        // # Style & Status
 
-        mStepperCircleActiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_circle_active_color);
-        mStepperCircleInactiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_circle_inactive_color);
-        mTitleActiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_title_active);
-        mTitleInActiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_title_inactive);
-        mSubTitleActiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_sub_title_active);
-        mSubTitleInactiveColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_sub_title_inactive);
+        mStepperStyle = VerticalStepperStyle.createAsDefaultStyle();
+        mStepperStatus = VerticalStepperStatus.createAsDefaultStatus();
 
         // # Dimens
 
@@ -118,8 +109,8 @@ class VerticalStepperView extends RelativeLayout {
         }
 
         // # Add ripple-effect to myself
+        // # See -> https://stackoverflow.com/questions/37987732/programatically-set-selectableitembackground-on-android-view
 
-        // See -> https://stackoverflow.com/questions/37987732/programatically-set-selectableitembackground-on-android-view
         TypedValue outValue = new TypedValue();
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
         this.setBackgroundResource(outValue.resourceId);
@@ -128,14 +119,11 @@ class VerticalStepperView extends RelativeLayout {
         // # Connection Line For Stepper Circle
 
         mStepperConnectionLinePaint = new Paint();
-        mStepperConnectionLinePaint.setColor(ContextCompat.getColor(getContext(), R.color.vertical_stepper_connector_line));
+        mStepperConnectionLinePaint.setColor(ContextCompat.getColor(getContext(), mStepperStyle.getStepConnectorLineColorRes()));
         mStepperConnectionLinePaint.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width));
 
-        // # Default values
-
-        mTitleView.setText(mTitle);
-        mSubTitleView.setText(mSubTitle);
-        mStepperCircleTextView.setText(String.valueOf(mStepLabel));
+        // # Apply default status & style
+        applyStyle(mStepperStyle, true);
     }
 
     @Override
@@ -160,6 +148,10 @@ class VerticalStepperView extends RelativeLayout {
 
         canvas.drawLine(connectionLineX, connectionLineStartY, connectionLineX, connectionLineEndY, mStepperConnectionLinePaint);
     }
+
+    /**
+     * CONTENTS
+     * ----------------------------------------------------------------------------- */
     
     public void setTitle(String title) {
         mTitle = title;
@@ -202,20 +194,33 @@ class VerticalStepperView extends RelativeLayout {
         return mContentViewContainer;
     }
 
-    public void applyStatus(VerticalStepperStatus status, boolean enforceUpdates) {
-        setIsActiveUi(status.isActive(), enforceUpdates);
-        setIsCompletedUi(status.isCompleted(), enforceUpdates);
+    /**
+     * STATUS & STYLE
+     * ----------------------------------------------------------------------------- */
+
+    public void applyStatus(@NonNull VerticalStepperStatus status, boolean enforceUpdates) {
+        applyActiveStatus(status.isActive(), enforceUpdates);
+        applyCompletedStatus(status.isCompleted(), enforceUpdates);
+        mStepperStatus.copy(status);
     }
 
-    // Default is TRUE
-    private boolean mIsActiveUi = true;
+    public void applyStyle(@NonNull VerticalStepperStyle style, boolean enforceUpdates) {
+        mStepperStyle.copy(style);
+        // icon
+        mStepperCircleImgView.setImageResource(style.getCompletedIconRes());
+        // Stepper Circle Size
+        applyStepperCircleSize(style.getStepperCircleSize());
+        // Others
+        applyStatus(mStepperStatus, enforceUpdates);
+    }
 
-    public void setIsActiveUi(boolean isActiveUi, boolean enforceUpdate) {
-        if (isActiveUi == mIsActiveUi && !enforceUpdate) return;
+    public void applyActiveStatus(boolean isActive, boolean enforceUpdate) {
+        if (isActive == mStepperStatus.isActive() && !enforceUpdate) return;
 
         // # Stepper Circle Color
 
-        int color = (isActiveUi) ? mStepperCircleActiveColor : mStepperCircleInactiveColor;
+        int color = ContextCompat.getColor(getContext(),
+                (isActive) ? mStepperStyle.getActiveColorRes() : mStepperStyle.getInactiveColorRes());
 
         Drawable bg = DrawableCompat.wrap(mStepperCircleTextView.getBackground());
         DrawableCompat.setTint(bg, color);
@@ -225,74 +230,56 @@ class VerticalStepperView extends RelativeLayout {
         DrawableCompat.setTint(bg, color);
         DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
 
-        // # Title & Sub-Title Color
+        // # Title & Sub-Title Appearance
 
-//        color = (isActiveUi) ? mTitleActiveColor : mTitleInActiveColor;
-//        mTitleView.setTextColor(color);
-//        color = (isActiveUi) ? mSubTitleActiveColor : mSubTitleInactiveColor;
-//        mSubTitleView.setTextColor(color);
-        int appearanceResId = (isActiveUi) ? R.style.VerticalStepperActiveTitleAppearance : R.style.VerticalStepperInactiveTitleAppearance;
+        int appearanceResId = (isActive) ? mStepperStyle.getActiveTitleAppearanceRes() : mStepperStyle.getInactiveTitleAppearanceRes();
         TextViewCompat.setTextAppearance(mTitleView, appearanceResId);
-        appearanceResId = (isActiveUi) ? R.style.VerticalStepperActiveSubTitleAppearance : R.style.VerticalStepperInactiveSubTitleAppearance;
+        appearanceResId = (isActive) ? mStepperStyle.getActiveSubTitleAppearanceRes() : mStepperStyle.getInactiveSubTitleAppearanceRes();
         TextViewCompat.setTextAppearance(mSubTitleView, appearanceResId);
 
         // Update
-        mIsActiveUi = isActiveUi;
+        mStepperStatus.setActive(isActive);
     }
 
-    // Default is FALSE
-    private boolean mIsCompletedUi = false;
-
-    public void setIsCompletedUi(boolean isCompletedUi, boolean enforceUpdate) {
-        if (isCompletedUi == mIsCompletedUi && !enforceUpdate) return;
+    public void applyCompletedStatus(boolean isCompleted, boolean enforceUpdate) {
+        if (isCompleted == mStepperStatus.isCompleted() && !enforceUpdate) return;
 
         // TODO; ANIMATE WHEN TOGGLE STEPPER CIRCLES
-        if (isCompletedUi) {
-//            toggleViewsWithScaleAnimation(mStepperCircleTextView, mStepperCircleImgView);
+        if (isCompleted) {
             mStepperCircleTextView.setVisibility(INVISIBLE);
             mStepperCircleImgView.setVisibility(VISIBLE);
         } else {
-//            toggleViewsWithScaleAnimation(mStepperCircleImgView, mStepperCircleTextView);
             mStepperCircleTextView.setVisibility(VISIBLE);
             mStepperCircleImgView.setVisibility(INVISIBLE);
         }
 
         // Update
-        mIsCompletedUi = isCompletedUi;
+        mStepperStatus.setCompleted(isCompleted);
     }
 
-    private void toggleViewsWithScaleAnimation(final View hiddenView, final View revealView) {
-        revealView.setVisibility(INVISIBLE);
-        hiddenView.setVisibility(VISIBLE);
-        ScaleAnimation scaleUpAnimation = new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        scaleUpAnimation.setDuration(150);
-        scaleUpAnimation.setRepeatCount(0);
-        scaleUpAnimation.setFillAfter(true);
-        scaleUpAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+    public void applyStepperCircleSize(@VerticalStepperStyle.StepperCircleSize int size) {
+        ViewGroup.LayoutParams params = mStepperCircleLayout.getLayoutParams();
+        int textSize;
+        int iconPadding;
 
-            }
+        if (size == VerticalStepperStyle.STEPPER_CIRCLE_SIZE_REGULAR) {
+            params.width = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_size);
+            params.height = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_size);
+            textSize = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_text_size);
+            iconPadding = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_icon_padding);
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                revealView.setScaleX(0f);
-                revealView.setScaleY(0f);
-                hiddenView.setVisibility(INVISIBLE);
-                revealView.setVisibility(VISIBLE);
-                ScaleAnimation scaleDownAnimation = new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                scaleDownAnimation.setDuration(150);
-                scaleDownAnimation.setRepeatCount(0);
-                scaleDownAnimation.setFillAfter(true);
-                revealView.startAnimation(scaleDownAnimation);
-            }
+        } else if (size == VerticalStepperStyle.STEPPER_CIRCLE_SIZE_SMALL) {
+            params.width = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_size);
+            params.height = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_size);
+            textSize = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_text_size);
+            iconPadding = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_icon_padding);
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+        } else {
+            throw new IllegalArgumentException();
+        }
 
-            }
-        });
-
-        hiddenView.startAnimation(scaleUpAnimation);
+        mStepperCircleLayout.setLayoutParams(params);
+        mStepperCircleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        mStepperCircleImgView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
     }
 }

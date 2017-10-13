@@ -13,6 +13,14 @@ public final class VerticalStepperStatus {
     // Is a stepper's content view expanded or collapsed
     private boolean isExpanded;
 
+    public static VerticalStepperStatus createAsDefaultStatus() {
+        VerticalStepperStatus status = new VerticalStepperStatus();
+        status.setActive(false);
+        status.setCompleted(false);
+        status.setExpanded(false);
+        return status;
+    }
+
     /**
      * Setters have package-private visibility,
      * Getters have public visibility
