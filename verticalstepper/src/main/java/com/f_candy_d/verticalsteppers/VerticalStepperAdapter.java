@@ -54,16 +54,16 @@ public final class VerticalStepperAdapter
         if (viewType == TYPE_EXPANDED_VIEW) {
             if (mStepperManager != null) {
                 VerticalStepperView stepperView = itemView.findViewById(R.id.stepper_view);
-                stepperView.applyStatus(new VerticalStepperStatus(false, false, false), false);
-                stepperView.setContentView(mStepperManager
-                        .onCreateExpandedContentView(stepperView.getContentViewContainer()));
+//                stepperView.applyStatus(new VerticalStepperStatus(false, false, false), false);
+//                stepperView.setContentView(mStepperManager
+//                        .onCreateExpandedContentView(stepperView.getContentViewContainer()));
             }
         } else if (viewType == TYPE_COLLAPSED_VIEW) {
             if (mStepperManager != null) {
                 VerticalStepperView stepperView = itemView.findViewById(R.id.stepper_view);
-                stepperView.applyStatus(new VerticalStepperStatus(false, false, false), false);
-                stepperView.setContentView(mStepperManager
-                        .onCreateCollapsedContentView(stepperView.getContentViewContainer()));
+//                stepperView.applyStatus(new VerticalStepperStatus(false, false, false), false);
+//                stepperView.setContentView(mStepperManager
+//                        .onCreateCollapsedContentView(stepperView.getContentViewContainer()));
             }
         }
 
@@ -95,19 +95,19 @@ public final class VerticalStepperAdapter
         // # ContentView
 
         if (viewType == TYPE_EXPANDED_VIEW) {
-            if (stepperView.getContentView() != null && mStepperManager != null) {
-                mStepperManager.onBindExpandedContentView(stepperView.getContentView(), position);
-            }
+//            if (stepperView.getContentView() != null && mStepperManager != null) {
+//                mStepperManager.onBindExpandedContentView(stepperView.getContentView(), position);
+//            }
         } else if (viewType == TYPE_COLLAPSED_VIEW) {
-            if (stepperView.getContentView() != null && mStepperManager != null) {
-                mStepperManager.onBindCollapsedContentView(stepperView.getContentView(), position);
-            }
+//            if (stepperView.getContentView() != null && mStepperManager != null) {
+//                mStepperManager.onBindCollapsedContentView(stepperView.getContentView(), position);
+//            }
         }
 
         // # Status
 
         VerticalStepperStatus status = mStepperStatuses.get(position);
-        stepperView.applyStatus(status, false);
+//        stepperView.applyStatus(status, false);
     }
 
     @Override

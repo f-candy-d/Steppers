@@ -30,9 +30,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/stepper_circle_background"
             android:padding="@dimen/vertical_regular_stepper_circle_icon_padding"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible"/>
-
+            android:src="@drawable/ic_check"/>
     </FrameLayout>
 
     <LinearLayout
@@ -64,8 +62,7 @@
             android:id="@+id/content_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/vertical_stepper_content_view_top_margin"
-            android:visibility="gone"/>
+            android:layout_marginTop="@dimen/vertical_stepper_content_view_top_margin"/>
 
     </LinearLayout>
 

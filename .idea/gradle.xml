@@ -9,7 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/verticalsteppers" />
+            <option value="$PROJECT_DIR$/verticalstepper" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

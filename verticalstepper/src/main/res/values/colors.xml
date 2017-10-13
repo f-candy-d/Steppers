@@ -5,6 +5,7 @@
     <color name="vertical_stepper_active_primary">@color/google_blue</color>
     <color name="vertical_stepper_inactive_primary">#616161</color>
     <color name="vertical_stepper_circle_text">#FFFFFF</color>
+    <color name="vertical_stepper_circle_icon_tint">#FFFFFF</color>
 
     <color name="vertical_stepper_title_active">#212121</color>
     <color name="vertical_stepper_sub_title_active">#555555</color>

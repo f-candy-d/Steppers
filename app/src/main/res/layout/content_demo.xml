@@ -9,9 +9,19 @@
     tools:context="com.f_candy_d.steppers.DemoActivity"
     tools:showIn="@layout/activity_demo">
 
-    <com.f_candy_d.verticalsteppers.VerticalStepperListView
-        android:id="@+id/list"
+    <!--<com.f_candy_d.verticalsteppers.VerticalStepperListView-->
+        <!--android:id="@+id/list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
+
+    <com.f_candy_d.verticalsteppers.VerticalStepperView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        app:title="@string/action_settings"
+        app:subTitle="@string/appbar_scrolling_view_behavior"
+        app:stepLabel="1"
+        app:collapsedContentViewLayout="@layout/collapsed_content"
+        app:expandedContentViewLayout="@layout/expanded_content"
+        app:circularLabelIconTint="@color/colorAccent"/>
 
 </RelativeLayout>

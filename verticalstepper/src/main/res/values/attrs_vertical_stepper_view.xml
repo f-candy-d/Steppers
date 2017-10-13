@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="VerticalStepperView">
+        <attr name="title" format="string"/>
+        <attr name="subTitle" format="string"/>
+        <attr name="stepLabel" format="string"/>
+        <attr name="collapsedContentViewLayout" format="reference"/>
+        <attr name="expandedContentViewLayout" format="reference"/>
+        <attr name="activeThemeColor" format="color"/>
+        <attr name="inactiveThemeColor" format="color"/>
+        <attr name="stepConnectorColor" format="color"/>
+        <attr name="activeTitleAppearance" format="reference"/>
+        <attr name="activeSubTitleAppearance" format="reference"/>
+        <attr name="inactiveTitleAppearance" format="reference"/>
+        <attr name="inactiveSubTitleAppearance" format="reference"/>
+        <attr name="circularLabelIconTint" format="color"/>
+        <attr name="circularLabelSize" format="enum">
+            <enum name="small" value="0"/>
+            <enum name="regular" value="1"/>
+        </attr>
+    </declare-styleable>
+</resources>

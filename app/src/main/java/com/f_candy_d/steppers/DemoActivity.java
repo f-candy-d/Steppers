@@ -19,18 +19,18 @@ public class DemoActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        VerticalStepperListView listView = (VerticalStepperListView) findViewById(R.id.list);
-        final Manager manager = new Manager();
-        listView.build(this, manager);
-        manager.addSteps();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                manager.nextStep();
-            }
-        });
+//        VerticalStepperListView listView = (VerticalStepperListView) findViewById(R.id.list);
+//        final Manager manager = new Manager();
+//        listView.build(this, manager);
+//        manager.addSteps();
+//
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                manager.nextStep();
+//            }
+//        });
     }
 
     @Override
