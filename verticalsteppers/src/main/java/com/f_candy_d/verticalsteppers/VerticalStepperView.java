@@ -19,11 +19,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-/**
- * TODO: document your custom view class.
- *
- * Add the 'isChecked' attribute
- */
 class VerticalStepperView extends RelativeLayout {
 
     private String mStepLabel;
@@ -122,8 +117,11 @@ class VerticalStepperView extends RelativeLayout {
         mStepperConnectionLinePaint.setColor(ContextCompat.getColor(getContext(), mStepperStyle.getStepConnectorLineColorRes()));
         mStepperConnectionLinePaint.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width));
 
-        // # Apply default status & style
+        // # Set default values
         applyStyle(mStepperStyle, true);
+        setTitle(mTitle);
+        setSubTitle(mSubTitle);
+        setStepLabel(mStepLabel);
     }
 
     @Override
@@ -156,11 +154,21 @@ class VerticalStepperView extends RelativeLayout {
     public void setTitle(String title) {
         mTitle = title;
         mTitleView.setText(title);
+        if (title == null || title.length() == 0) {
+            mTitleView.setVisibility(GONE);
+        } else {
+            mTitleView.setVisibility(VISIBLE);
+        }
     }
 
     public void setSubTitle(String subTitle) {
         mSubTitle = subTitle;
         mSubTitleView.setText(subTitle);
+        if (subTitle == null || subTitle.length() == 0) {
+            mSubTitleView.setVisibility(GONE);
+        } else {
+            mSubTitleView.setVisibility(VISIBLE);
+        }
     }
 
     public void setStepLabel(int number) {

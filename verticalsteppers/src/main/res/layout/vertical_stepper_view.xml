@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="０"
             android:textSize="@dimen/vertical_regular_stepper_circle_text_size"
             android:textColor="@color/vertical_stepper_circle_text"
             android:background="@drawable/stepper_circle_background"/>
@@ -52,16 +51,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/VerticalStepperActiveTitleAppearance"
-            android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"
-            android:text="Select an app"/>
+            android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"/>
 
         <TextView
             android:id="@+id/work_sub_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/VerticalStepperActiveSubTitleAppearance"
-            android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"
-            android:text="Summary if needed..."/>
+            android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"/>
 
         <FrameLayout
             android:id="@+id/content_view_container"
