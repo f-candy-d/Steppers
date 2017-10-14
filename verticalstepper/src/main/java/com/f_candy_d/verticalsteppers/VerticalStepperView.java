@@ -466,12 +466,7 @@ public class VerticalStepperView extends RelativeLayout {
     }
 
     private void applyCircularLabelColor(@ColorInt int color, int drawableIdToApplyColor) {
-        Drawable bg = mCircularLabelBgDrawableHelper.getDrawableById(drawableIdToApplyColor);
-        if (bg == null) {
-            throw new IllegalArgumentException(
-                    "The second argument must be one of DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG");
-        }
-        bg = DrawableCompat.wrap(bg);
+        Drawable bg = DrawableCompat.wrap(mCircularLabelBgDrawableHelper.getDrawableById(drawableIdToApplyColor));
         DrawableCompat.setTint(bg, color);
         DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
     }

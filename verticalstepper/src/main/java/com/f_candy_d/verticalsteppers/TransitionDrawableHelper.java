@@ -17,17 +17,17 @@ class TransitionDrawableHelper {
     private int mSecondLayerId = SECOND_LAYER_INDEX;
     private int mCurrentLayerIndex;
 
-    public TransitionDrawableHelper(TransitionDrawable transitionDrawable) {
+    TransitionDrawableHelper(TransitionDrawable transitionDrawable) {
         mTarget = transitionDrawable;
         resetDrawableTransition();
     }
 
-    public void setTarget(TransitionDrawable transitionDrawable) {
+    void setTarget(TransitionDrawable transitionDrawable) {
         mTarget = transitionDrawable;
         resetDrawableTransition();
     }
 
-    public void setFirstLayerId(int firstLayerId) {
+    void setFirstLayerId(int firstLayerId) {
         if (firstLayerId == mSecondLayerId) {
             throw new IllegalArgumentException(
                     "Layer id must be unique, but firstLayerId=" + firstLayerId + " , secondLayerId=" + mSecondLayerId);
@@ -36,7 +36,7 @@ class TransitionDrawableHelper {
         mTarget.setId(FIRST_LAYER_INDEX, firstLayerId);
     }
 
-    public void setSecondLayerId(int secondLayerId) {
+    void setSecondLayerId(int secondLayerId) {
         if (secondLayerId == mFirstLayerId) {
             throw new IllegalArgumentException(
                     "Layer id must be unique, but firstLayerId=" + mFirstLayerId + " , secondLayerId=" + secondLayerId);
@@ -46,15 +46,15 @@ class TransitionDrawableHelper {
         mTarget.setId(SECOND_LAYER_INDEX, secondLayerId);
     }
 
-    public int getFirstLayerId() {
+    int getFirstLayerId() {
         return mFirstLayerId;
     }
 
-    public int getSecondLayerId() {
+    int getSecondLayerId() {
         return mSecondLayerId;
     }
 
-    public Drawable getDrawableById(int id) {
+    Drawable getDrawableById(int id) {
         if (id == mFirstLayerId) {
             return mTarget.getDrawable(FIRST_LAYER_INDEX);
         } else if (id == mSecondLayerId) {
@@ -64,7 +64,7 @@ class TransitionDrawableHelper {
         }
     }
 
-    public void translateDrawable(int id, int duration) {
+    void translateDrawable(int id, int duration) {
         if (id == mFirstLayerId) {
             if (mCurrentLayerIndex == SECOND_LAYER_INDEX) {
                 mTarget.reverseTransition(duration);
@@ -81,12 +81,12 @@ class TransitionDrawableHelper {
         }
     }
 
-    public void setCurrentDrawable(int id) {
+    void setCurrentDrawable(int id) {
         translateDrawable(id, 0);
     }
 
 
-    public void resetDrawableTransition() {
+    void resetDrawableTransition() {
         mTarget.resetTransition();
         mCurrentLayerIndex = FIRST_LAYER_INDEX;
     }
