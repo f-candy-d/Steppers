@@ -87,60 +87,6 @@ public class VerticalStepperView extends RelativeLayout {
 
     private void init(AttributeSet attrs, int defStyle) {
 
-        // # Set or Load default attributes
-
-        mActiveThemeColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_primary);
-        mInactiveThemeColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_primary);
-        mActiveCircularLabelIconTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_icon_tint);
-        mInactiveCircularLabelIconTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_icon_tint);
-        mActiveCircularLabelTextTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_text_tint);
-        mInactiveCircularLabelTextTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_text_tint);
-        mActiveTitleAppearanceResId = R.style.VerticalStepperActiveTitleAppearance;
-        mActiveSubTitleAppearanceResId = R.style.VerticalStepperActiveSubTitleAppearance;
-        mInactiveTitleAppearanceResId = R.style.VerticalStepperInactiveTitleAppearance;
-        mInactiveSubTitleAppearanceResId = R.style.VerticalStepperInactiveSubTitleAppearance;
-        @CircularLabelSize int circularLabelSize = CIRCULAR_LABEL_SIZE_REGULAR;
-        @ColorInt int stepConnectionLineColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_connector_line);
-        @Px int stepConnectionLineWidth = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width);
-        @DrawableRes int completedIconResId = R.drawable.ic_check;
-
-        // # Load Attributes from xml
-
-        final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.VerticalStepperView, defStyle, 0);
-
-        mActiveThemeColor = a.getColor(R.styleable.VerticalStepperView_activeThemeColor, mActiveThemeColor);
-        mInactiveThemeColor = a.getColor(R.styleable.VerticalStepperView_inactiveThemeColor, mInactiveThemeColor);
-        mActiveCircularLabelIconTint = a.getColor(R.styleable.VerticalStepperView_activeCircularLabelIconTint, mActiveCircularLabelIconTint);
-        mInactiveCircularLabelIconTint = a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelIconTint, mInactiveCircularLabelIconTint);
-        mActiveCircularLabelTextTint = a.getColor(R.styleable.VerticalStepperView_activeCircularLabelTextTint, mActiveCircularLabelTextTint);
-        mInactiveCircularLabelTextTint = a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelTextTint, mInactiveCircularLabelTextTint);
-        stepConnectionLineColor = a.getColor(R.styleable.VerticalStepperView_stepConnectorColor, stepConnectionLineColor);
-        stepConnectionLineWidth = a.getDimensionPixelSize(R.styleable.VerticalStepperView_stepConnectionLineWidth, stepConnectionLineWidth);
-        mActiveTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_activeTitleAppearance, mActiveTitleAppearanceResId);
-        mActiveSubTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_activeSubTitleAppearance, mActiveSubTitleAppearanceResId);
-        mInactiveTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_inactiveTitleAppearance, mInactiveTitleAppearanceResId);
-        mInactiveSubTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_inactiveSubTitleAppearance, mInactiveSubTitleAppearanceResId);
-        completedIconResId = a.getResourceId(R.styleable.VerticalStepperView_completedIcon, completedIconResId);
-
-        switch (a.getInt(R.styleable.VerticalStepperView_circularLabelSize, circularLabelSize)) {
-            case CIRCULAR_LABEL_SIZE_REGULAR: circularLabelSize = CIRCULAR_LABEL_SIZE_REGULAR; break;
-            case CIRCULAR_LABEL_SIZE_SMALL: circularLabelSize = CIRCULAR_LABEL_SIZE_SMALL; break;
-        }
-
-        String title = a.getString(R.styleable.VerticalStepperView_title);
-        String subTitle = a.getString(R.styleable.VerticalStepperView_subTitle);
-        String stepLabel = a.getString(R.styleable.VerticalStepperView_stepLabel);
-        boolean expandContentsByDefault = a.getBoolean(R.styleable.VerticalStepperView_expandContentsByDefault, false);
-        boolean activateStepByDefault = a.getBoolean(R.styleable.VerticalStepperView_activateStepByDefault, false);
-        boolean completeStepByDefault = a.getBoolean(R.styleable.VerticalStepperView_completeStepByDefault, false);
-        // Load layout's resource id; -> https://stackoverflow.com/questions/25303979/custom-xml-attribute-to-a-layout-reference
-        // And id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
-        final int collapsedContentViewResId = a.getResourceId(R.styleable.VerticalStepperView_collapsedContentViewLayout, 0);
-        final int expandedContentViewResId = a.getResourceId(R.styleable.VerticalStepperView_expandedContentViewLayout, 0);
-
-        a.recycle();
-
         // # UI
 
         // Load the layout file
@@ -158,16 +104,90 @@ public class VerticalStepperView extends RelativeLayout {
         mCircularLabelBgDrawableHelper = new TransitionDrawableHelper((TransitionDrawable) mStepperCircleLayout.getBackground());
         mCircularLabelBgDrawableHelper.setFirstLayerId(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
         mCircularLabelBgDrawableHelper.setSecondLayerId(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
-        applyCircularLabelColor(mActiveThemeColor, DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
-        applyCircularLabelColor(mInactiveThemeColor, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
 
         // # For onDraw() method
 
         mStepperConnectionLinePaint = new Paint();
-        mStepperConnectionLinePaint.setColor(stepConnectionLineColor);
-        mStepperConnectionLinePaint.setStrokeWidth(stepConnectionLineWidth);
         mStepperConnectionLineTopMargin = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_top_margin);
         mStepperConnectionLineBottomMargin = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_bottom_margin);
+
+        // # Load default attributes from xml and apply them to UI
+
+        final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.VerticalStepperView, defStyle, 0);
+
+        // Whole
+
+        setActiveThemeColor(a.getColor(R.styleable.VerticalStepperView_activeThemeColor,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_primary)));
+        setInactiveThemeColor(a.getColor(R.styleable.VerticalStepperView_inactiveThemeColor,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_primary)));
+
+        mStepperConnectionLinePaint.setColor(a.getColor(R.styleable.VerticalStepperView_stepConnectorColor,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_connector_line)));
+        mStepperConnectionLinePaint.setStrokeWidth(a.getDimensionPixelSize(R.styleable.VerticalStepperView_stepConnectionLineWidth,
+                getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width)));
+
+        // Circular Label
+
+        setActiveCircularLabelIconTint(a.getColor(R.styleable.VerticalStepperView_activeCircularLabelIconTint,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_icon_tint)));
+        setInactiveCircularLabelIconTint(a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelIconTint,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_icon_tint)));
+
+        setActiveCircularLabelTextTint(a.getColor(R.styleable.VerticalStepperView_activeCircularLabelTextTint,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_text_tint)));
+        setInactiveCircularLabelTextTint(a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelTextTint,
+                ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_text_tint)));
+
+        setCompletedIcon(a.getResourceId(R.styleable.VerticalStepperView_completedIcon, R.drawable.ic_check));
+
+        switch (a.getInt(R.styleable.VerticalStepperView_circularLabelSize, CIRCULAR_LABEL_SIZE_REGULAR)) {
+            case CIRCULAR_LABEL_SIZE_REGULAR: setCircularLabelSize(CIRCULAR_LABEL_SIZE_REGULAR); break;
+            case CIRCULAR_LABEL_SIZE_SMALL: setCircularLabelSize(CIRCULAR_LABEL_SIZE_SMALL); break;
+        }
+
+        setStepLabel(a.getString(R.styleable.VerticalStepperView_stepLabel));
+
+        // Title
+
+        setActiveTitleAppearanceResId(a.getResourceId(R.styleable.VerticalStepperView_activeTitleAppearance,
+                R.style.VerticalStepperActiveTitleAppearance));
+        setInactiveTitleAppearanceResId(a.getResourceId(R.styleable.VerticalStepperView_inactiveTitleAppearance,
+                R.style.VerticalStepperInactiveTitleAppearance));
+        setTitle(a.getString(R.styleable.VerticalStepperView_title));
+
+        // SubTitle
+
+        setActiveSubTitleAppearanceResId(a.getResourceId(R.styleable.VerticalStepperView_activeSubTitleAppearance,
+                R.style.VerticalStepperActiveSubTitleAppearance));
+        setInactiveSubTitleAppearanceResId(a.getResourceId(R.styleable.VerticalStepperView_inactiveSubTitleAppearance,
+                R.style.VerticalStepperInactiveSubTitleAppearance));
+        setSubTitle(a.getString(R.styleable.VerticalStepperView_subTitle));
+
+        // Content Views
+        // And id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
+
+        int contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_collapsedContentViewLayout, 0);
+        if (contentViewResId != 0) {
+            setCollapsedContentView(contentViewResId);
+        } else {
+            setCollapsedContentView(null);
+        }
+
+        contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_expandedContentViewLayout, 0);
+        if (contentViewResId != 0) {
+            setExpandedContentView(contentViewResId);
+        } else {
+            setExpandedContentView(null);
+        }
+
+        // Default status
+
+        if (a.getBoolean(R.styleable.VerticalStepperView_expandContentsByDefault, false)) expandContentView(true); else collapseContentView(true);
+        if (a.getBoolean(R.styleable.VerticalStepperView_activateStepByDefault, false)) activateStep(true); else inactivateStep(true);
+        if (a.getBoolean(R.styleable.VerticalStepperView_completeStepByDefault, false)) completeStep(true); else incompleteStep(true);
+
+        a.recycle();
 
         // # Add ripple-effect to myself
         // # See -> https://stackoverflow.com/questions/37987732/programatically-set-selectableitembackground-on-android-view
@@ -176,30 +196,6 @@ public class VerticalStepperView extends RelativeLayout {
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
         this.setBackgroundResource(outValue.resourceId);
         this.setClickable(true);
-
-        // # Setup view's default status
-
-        //Inflate a content views if an user specify it in a layout XML file
-        if (collapsedContentViewResId != 0) {
-            setCollapsedContentView(collapsedContentViewResId);
-        } else {
-            setCollapsedContentView(null);
-        }
-        if (expandedContentViewResId != 0) {
-            setExpandedContentView(expandedContentViewResId);
-        } else {
-            setExpandedContentView(null);
-        }
-
-        setTitle(title);
-        setSubTitle(subTitle);
-        setStepLabel(stepLabel);
-        setCircularLabelSize(circularLabelSize);
-        setCompletedIcon(completedIconResId);
-
-        if (expandContentsByDefault) expandContentView(true); else collapseContentView(true);
-        if (activateStepByDefault) activateStep(true); else inactivateStep(true);
-        if (completeStepByDefault) completeStep(true); else incompleteStep(true);
     }
 
     @Override
@@ -425,16 +421,12 @@ public class VerticalStepperView extends RelativeLayout {
 
     public void setActiveThemeColor(int activeThemeColor) {
         mActiveThemeColor = activeThemeColor;
-        if (mIsStepActive) {
-            applyCircularLabelColor(activeThemeColor, DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
-        }
+        applyCircularLabelColor(activeThemeColor, DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
     }
 
     public void setInactiveThemeColor(int inactiveThemeColor) {
         mInactiveThemeColor = inactiveThemeColor;
-        if (!mIsStepActive) {
-            applyCircularLabelColor(inactiveThemeColor, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
-        }
+        applyCircularLabelColor(inactiveThemeColor, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
     }
 
     public void setActiveTitleAppearanceResId(int activeTitleAppearanceResId) {

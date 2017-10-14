@@ -23,7 +23,9 @@
         app:subTitle="@string/appbar_scrolling_view_behavior"
         app:stepLabel="1"
         app:circularLabelSize="small"
-        app:expandContentsByDefault="false"/>
+        app:expandContentsByDefault="false"
+        app:expandedContentViewLayout="@layout/expanded_content"
+        app:collapsedContentViewLayout="@layout/collapsed_content"/>
 
     <LinearLayout
         android:id="@+id/buttons_layout"
