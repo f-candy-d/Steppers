@@ -1,17 +1,13 @@
 package com.f_candy_d.steppers;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.transition.TransitionManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.f_candy_d.verticalsteppers.VerticalStepperListView;
 import com.f_candy_d.verticalsteppers.VerticalStepperView;
 
 public class DemoActivity extends AppCompatActivity {
@@ -63,8 +59,6 @@ public class DemoActivity extends AppCompatActivity {
                 }
             }
         });
-
-        final RelativeLayout rlRoot = (RelativeLayout) findViewById(R.id.rl_root);
 
         findViewById(R.id.toggle_all).setOnClickListener(new View.OnClickListener() {
             @Override

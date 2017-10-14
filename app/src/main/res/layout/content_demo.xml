@@ -10,11 +10,6 @@
     tools:context="com.f_candy_d.steppers.DemoActivity"
     tools:showIn="@layout/activity_demo">
 
-    <!--<com.f_candy_d.verticalsteppers.VerticalStepperListView-->
-        <!--android:id="@+id/list"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"/>-->
-
     <com.f_candy_d.verticalsteppers.VerticalStepperView
         android:id="@+id/stepper"
         android:layout_width="match_parent"

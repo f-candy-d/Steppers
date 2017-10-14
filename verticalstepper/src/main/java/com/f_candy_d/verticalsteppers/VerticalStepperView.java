@@ -379,6 +379,30 @@ public class VerticalStepperView extends RelativeLayout {
         return mIsStepCompleted;
     }
 
+    public void applyStatusSet(StepperStatusSet statusSet, boolean enforceUpdate) {
+        if (statusSet.isContentViewExpanded()) {
+            expandContentView(enforceUpdate);
+        } else {
+            collapseContentView(enforceUpdate);
+        }
+
+        if (statusSet.isStepActive()) {
+            activateStep(enforceUpdate);
+        } else {
+            inactivateStep(enforceUpdate);
+        }
+
+        if (statusSet.isStepCompleted()) {
+            completeStep(enforceUpdate);
+        } else {
+            incompleteStep(enforceUpdate);
+        }
+    }
+
+    public void applyStatusSetWithAnimation(StepperStatusSet statusSet) {
+        animateChangingStatus(statusSet.toAnimationFlags());
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true,
             value = {ANIMATE_EXPAND_CONTENTS, ANIMATE_COLLAPSE_CONTENTS,
