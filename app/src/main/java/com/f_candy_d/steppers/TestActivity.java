@@ -35,7 +35,8 @@ public class TestActivity extends AppCompatActivity {
             public void onClick(View view) {
                 TransitionDrawable transitionDrawable = (TransitionDrawable) img.getDrawable();
                 if (isTranslated) {
-                    transitionDrawable.reverseTransition(200);
+//                    transitionDrawable.reverseTransition(200);
+                    transitionDrawable.resetTransition();
                 } else {
                     transitionDrawable.startTransition(200);
                 }

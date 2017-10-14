@@ -33,10 +33,10 @@ import java.lang.annotation.RetentionPolicy;
 
 public class VerticalStepperView extends RelativeLayout {
 
-    // For TransitionDrawable
-    private static final int DRAWABLE_LAYER_ID_ACTIVE_BG = 0;
-    private static final int DRAWABLE_LAYER_ID_INACTIVE_BG = 1;
-    private int mCurrentTransDrawableLayerId;
+    // For TransitionDrawable which is used as Circular-Label's background
+    private static final int DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG = 0;
+    private static final int DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG = 1;
+    private TransitionDrawableHelper mCircularLabelBgDrawableHelper;
 
     // Will be used only in #onDraw()
     // Initialize or load these values in #init()
@@ -153,14 +153,13 @@ public class VerticalStepperView extends RelativeLayout {
         mStepperCircleLayout = findViewById(R.id.stepper_circle_layout);
         mContentViewContainer = findViewById(R.id.content_view_container);
 
-        // Setup TransitionDrawable
+        // # Setup TransitionDrawable for Circular Label's background
 
-        TransitionDrawable transitionDrawable = (TransitionDrawable) mStepperCircleLayout.getBackground();
-        transitionDrawable.setId(0, DRAWABLE_LAYER_ID_ACTIVE_BG);
-        transitionDrawable.setId(1, DRAWABLE_LAYER_ID_INACTIVE_BG);
-        mCurrentTransDrawableLayerId = transitionDrawable.getId(0);
-        applyCircularLabelColor(mActiveThemeColor, DRAWABLE_LAYER_ID_ACTIVE_BG);
-        applyCircularLabelColor(mInactiveThemeColor, DRAWABLE_LAYER_ID_INACTIVE_BG);
+        mCircularLabelBgDrawableHelper = new TransitionDrawableHelper((TransitionDrawable) mStepperCircleLayout.getBackground());
+        mCircularLabelBgDrawableHelper.setFirstLayerId(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
+        mCircularLabelBgDrawableHelper.setSecondLayerId(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
+        applyCircularLabelColor(mActiveThemeColor, DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
+        applyCircularLabelColor(mInactiveThemeColor, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
 
         // # For onDraw() method
 
@@ -303,18 +302,6 @@ public class VerticalStepperView extends RelativeLayout {
         if (mIsContentViewExpanded && !enforceUpdate) return;
         mIsContentViewExpanded = true;
         if (mContentViewContainer.getChildCount() == 0) return;
-
-//        if (mExpandedContentView == null) {
-//            mContentViewContainer.setVisibility(GONE);
-//        } else {
-//            if (mCollapsedContentView != null) {
-//                mCollapsedContentView.setVisibility(GONE);
-//            }
-//            mExpandedContentView.setVisibility(VISIBLE);
-//            if (mContentViewContainer.getVisibility() != VISIBLE) {
-//                mContentViewContainer.setVisibility(VISIBLE);
-//            }
-//        }
         toggleContentViews(mContentViewContainer, mCollapsedContentView, mExpandedContentView);
     }
 
@@ -322,22 +309,7 @@ public class VerticalStepperView extends RelativeLayout {
         if (!mIsContentViewExpanded && !enforceUpdate) return;
         mIsContentViewExpanded = false;
         if (mContentViewContainer.getChildCount() == 0) return;
-
-//        if (mCollapsedContentView == null) {
-//            mContentViewContainer.setVisibility(GONE);
-//        } else {
-//            if (mExpandedContentView != null) {
-//                mExpandedContentView.setVisibility(GONE);
-//            }
-//            mCollapsedContentView.setVisibility(VISIBLE);
-//            if (mContentViewContainer.getVisibility() != VISIBLE) {
-//                mContentViewContainer.setVisibility(VISIBLE);
-//            }
-//        }
-
         toggleContentViews(mContentViewContainer, mExpandedContentView, mCollapsedContentView);
-
-        mIsContentViewExpanded = false;
     }
 
     private void toggleContentViews(@NonNull View container, View willHidden, View willReveal) {
@@ -362,7 +334,7 @@ public class VerticalStepperView extends RelativeLayout {
 
     public void activateStep(boolean enforceUpdate) {
         if (mIsStepActive && !enforceUpdate) return;
-        toggleCircularLabelBackground(DRAWABLE_LAYER_ID_ACTIVE_BG);
+        toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
         applyCircularLabelIconTint(mActiveCircularLabelIconTint);
         applyCircularLabelTextTint(mActiveCircularLabelTextTint);
         applyTitleAppearance(mActiveTitleAppearanceResId);
@@ -372,7 +344,7 @@ public class VerticalStepperView extends RelativeLayout {
 
     public void inactivateStep(boolean enforceUpdate) {
         if (!mIsStepActive && !enforceUpdate) return;
-        toggleCircularLabelBackground(DRAWABLE_LAYER_ID_INACTIVE_BG);
+        toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
         applyCircularLabelIconTint(mInactiveCircularLabelIconTint);
         applyCircularLabelTextTint(mInactiveCircularLabelTextTint);
         applyTitleAppearance(mInactiveTitleAppearanceResId);
@@ -380,21 +352,11 @@ public class VerticalStepperView extends RelativeLayout {
         mIsStepActive = false;
     }
 
-    private void toggleCircularLabelBackground(int layerIdToTranslate) {
-        if (mCurrentTransDrawableLayerId == layerIdToTranslate) return;
+    private static final int TOGGLE_CIRCULAR_LABEL_BACKGROUND_COLOR_DURATION = 400;
 
-        if (layerIdToTranslate != DRAWABLE_LAYER_ID_ACTIVE_BG && layerIdToTranslate != DRAWABLE_LAYER_ID_INACTIVE_BG) {
-            throw new IllegalArgumentException(
-                    "The first argument must be one of DRAWABLE_LAYER_ID_ACTIVE_BG, DRAWABLE_LAYER_ID_INACTIVE_BG");
-        }
-
-        TransitionDrawable transitionDrawable = (TransitionDrawable) mStepperCircleLayout.getBackground();
-        if (layerIdToTranslate == DRAWABLE_LAYER_ID_ACTIVE_BG) {
-            transitionDrawable.reverseTransition(200);
-        } else {
-            transitionDrawable.startTransition(200);
-        }
-        mCurrentTransDrawableLayerId = layerIdToTranslate;
+    private void toggleCircularLabelBackgroundColorDrawable(int layerIdToTranslate) {
+        mCircularLabelBgDrawableHelper.translateDrawable(layerIdToTranslate,
+                TOGGLE_CIRCULAR_LABEL_BACKGROUND_COLOR_DURATION);
     }
 
     public boolean isStepActive() {
@@ -464,14 +426,14 @@ public class VerticalStepperView extends RelativeLayout {
     public void setActiveThemeColor(int activeThemeColor) {
         mActiveThemeColor = activeThemeColor;
         if (mIsStepActive) {
-            applyCircularLabelColor(activeThemeColor, DRAWABLE_LAYER_ID_ACTIVE_BG);
+            applyCircularLabelColor(activeThemeColor, DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
         }
     }
 
     public void setInactiveThemeColor(int inactiveThemeColor) {
         mInactiveThemeColor = inactiveThemeColor;
         if (!mIsStepActive) {
-            applyCircularLabelColor(inactiveThemeColor, DRAWABLE_LAYER_ID_INACTIVE_BG);
+            applyCircularLabelColor(inactiveThemeColor, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
         }
     }
 
@@ -503,12 +465,11 @@ public class VerticalStepperView extends RelativeLayout {
         }
     }
 
-    private void applyCircularLabelColor(@ColorInt int color, int layerIdToApplyColor) {
-        TransitionDrawable transitionDrawable = (TransitionDrawable) mStepperCircleLayout.getBackground();
-        Drawable bg = transitionDrawable.findDrawableByLayerId(layerIdToApplyColor);
+    private void applyCircularLabelColor(@ColorInt int color, int drawableIdToApplyColor) {
+        Drawable bg = mCircularLabelBgDrawableHelper.getDrawableById(drawableIdToApplyColor);
         if (bg == null) {
             throw new IllegalArgumentException(
-                    "The second argument must be one of DRAWABLE_LAYER_ID_ACTIVE_BG, DRAWABLE_LAYER_ID_INACTIVE_BG");
+                    "The second argument must be one of DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG, DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG");
         }
         bg = DrawableCompat.wrap(bg);
         DrawableCompat.setTint(bg, color);
