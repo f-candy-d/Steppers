@@ -13,7 +13,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Px;
 import android.support.annotation.StyleRes;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
@@ -249,19 +248,11 @@ public class VerticalStepperView extends RelativeLayout {
     }
 
     public void setExpandedContentView(View view) {
-        if (mExpandedContentView != null) {
-            mContentViewContainer.removeView(mExpandedContentView);
-        }
-
+        removeExpandedContentView();
         if (view != null) {
             mContentViewContainer.addView(view);
             mExpandedContentView = view;
             mContentViewContainer.setVisibility(VISIBLE);
-        } else {
-            mExpandedContentView = null;
-            if (mContentViewContainer.getChildCount() == 0) {
-                mContentViewContainer.setVisibility(GONE);
-            }
         }
     }
 
@@ -272,20 +263,38 @@ public class VerticalStepperView extends RelativeLayout {
     }
 
     public void setCollapsedContentView(View view) {
-        if (mCollapsedContentView != null) {
-            mContentViewContainer.removeView(mCollapsedContentView);
-        }
-
+        removeCollapsedContentView();
         if (view != null) {
             mContentViewContainer.addView(view);
             mCollapsedContentView = view;
             mContentViewContainer.setVisibility(VISIBLE);
-        } else {
-            mCollapsedContentView = null;
-            if (mContentViewContainer.getChildCount() == 0) {
-                mContentViewContainer.setVisibility(GONE);
-            }
         }
+    }
+
+    public View removeExpandedContentView() {
+        if (mExpandedContentView != null) {
+            mContentViewContainer.removeView(mExpandedContentView);
+        }
+        View removed = mExpandedContentView;
+        mExpandedContentView = null;
+        if (mContentViewContainer.getChildCount() == 0) {
+            mContentViewContainer.setVisibility(GONE);
+        }
+
+        return removed;
+    }
+
+    public View removeCollapsedContentView() {
+        if (mCollapsedContentView != null) {
+            mContentViewContainer.removeView(mCollapsedContentView);
+        }
+        View removed = mCollapsedContentView;
+        mCollapsedContentView = null;
+        if (mContentViewContainer.getChildCount() == 0) {
+            mContentViewContainer.setVisibility(GONE);
+        }
+
+        return removed;
     }
 
     /**
@@ -379,7 +388,7 @@ public class VerticalStepperView extends RelativeLayout {
         return mIsStepCompleted;
     }
 
-    public void applyStatusSet(StepperStatusSet statusSet, boolean enforceUpdate) {
+    public void applyStatusSet(StepperStateSet statusSet, boolean enforceUpdate) {
         if (statusSet.isContentViewExpanded()) {
             expandContentView(enforceUpdate);
         } else {
@@ -399,7 +408,7 @@ public class VerticalStepperView extends RelativeLayout {
         }
     }
 
-    public void applyStatusSetWithAnimation(StepperStatusSet statusSet) {
+    public void applyStatusSetWithAnimation(StepperStateSet statusSet) {
         animateChangingStatus(statusSet.toAnimationFlags());
     }
 

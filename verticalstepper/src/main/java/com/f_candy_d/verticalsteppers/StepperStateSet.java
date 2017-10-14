@@ -4,7 +4,7 @@ package com.f_candy_d.verticalsteppers;
  * Created by daichi on 10/14/17.
  */
 
-public class StepperStatusSet {
+public class StepperStateSet {
 
     private boolean mIsContentViewExpanded;
     private boolean mIsStepActive;
@@ -22,32 +22,32 @@ public class StepperStatusSet {
         return mIsStepCompleted;
     }
 
-    public StepperStatusSet contentViewIsExpanded() {
+    public StepperStateSet contentViewIsExpanded() {
         mIsContentViewExpanded = true;
         return this;
     }
 
-    public StepperStatusSet contentViewIsCollapsed() {
+    public StepperStateSet contentViewIsCollapsed() {
         mIsContentViewExpanded = false;
         return this;
     }
 
-    public StepperStatusSet stepIsActive() {
+    public StepperStateSet stepIsActive() {
         mIsStepActive = true;
         return this;
     }
 
-    public StepperStatusSet stepIsInactive() {
+    public StepperStateSet stepIsInactive() {
         mIsStepActive = false;
         return this;
     }
 
-    public StepperStatusSet stepIsCompleted() {
+    public StepperStateSet stepIsCompleted() {
         mIsStepCompleted = true;
         return this;
     }
 
-    public StepperStatusSet stepIsIncompleted() {
+    public StepperStateSet stepIsIncompleted() {
         mIsStepCompleted = false;
         return this;
     }
