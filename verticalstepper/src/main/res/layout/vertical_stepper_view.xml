@@ -13,22 +13,22 @@
         android:layout_marginRight="@dimen/vertical_stepper_circle_right_margin"
         android:layout_marginEnd="@dimen/vertical_stepper_circle_right_margin"
         android:layout_marginLeft="@dimen/vertical_stepper_left_space"
-        android:layout_marginStart="@dimen/vertical_stepper_left_space">
+        android:layout_marginStart="@dimen/vertical_stepper_left_space"
+        android:background="@drawable/vertical_stepper_circular_label_bg">
 
         <TextView
             android:id="@+id/stepper_circle_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="@dimen/vertical_regular_stepper_circle_text_size"
-            android:background="@drawable/stepper_circle_background"/>
+            android:textSize="@dimen/vertical_regular_stepper_circle_text_size"/>
 
         <ImageView
             android:id="@+id/stepper_circle_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/stepper_circle_background"
             android:padding="@dimen/vertical_regular_stepper_circle_icon_padding"/>
+
     </FrameLayout>
 
     <LinearLayout
