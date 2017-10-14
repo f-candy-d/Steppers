@@ -13,10 +13,18 @@
         <attr name="activeSubTitleAppearance" format="reference"/>
         <attr name="inactiveTitleAppearance" format="reference"/>
         <attr name="inactiveSubTitleAppearance" format="reference"/>
-        <attr name="circularLabelIconTint" format="color"/>
+        <attr name="activeCircularLabelIconTint" format="color"/>
+        <attr name="inactiveCircularLabelIconTint" format="color"/>
+        <attr name="activeCircularLabelTextTint" format="color"/>
+        <attr name="inactiveCircularLabelTextTint" format="color"/>
         <attr name="circularLabelSize" format="enum">
             <enum name="small" value="0"/>
             <enum name="regular" value="1"/>
         </attr>
+        <attr name="completedIcon" format="reference"/>
+        <attr name="expandContentsByDefault" format="boolean"/>
+        <attr name="activateStepByDefault" format="boolean"/>
+        <attr name="completeStepByDefault" format="boolean"/>
+        <attr name="stepConnectionLineWidth" format="dimension"/>
     </declare-styleable>
 </resources>

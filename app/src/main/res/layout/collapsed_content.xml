@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:background="#616161">
+          android:background="#616161"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/title"
@@ -11,37 +12,5 @@
         android:text="COLLAPSED CONTENTS"
         android:layout_margin="16dp"
         android:layout_centerHorizontal="true"/>
-
-    <LinearLayout
-        android:layout_below="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp">
-
-        <Button
-            android:id="@+id/expand_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="expand"/>
-
-        <Button
-            android:id="@+id/toggle_complete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="comp"/>
-
-        <Button
-            android:id="@+id/toggle_active_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="activ"/>
-
-    </LinearLayout>
 
 </RelativeLayout>

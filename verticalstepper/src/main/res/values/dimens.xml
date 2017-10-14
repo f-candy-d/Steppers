@@ -15,13 +15,14 @@
     <dimen name="vertical_stepper_bottom_margin">24dp</dimen>
     <dimen name="vertical_stepper_left_space">24dp</dimen>
     <dimen name="vertical_stepper_right_space">24dp</dimen>
-    <dimen name="vertical_stepper_bottom_space">40dp</dimen>
-    <dimen name="vertical_stepper_contents_top_space">12dp</dimen>
+    <dimen name="vertical_stepper_bottom_space">24dp</dimen>
+    <dimen name="vertical_stepper_contents_top_space">8dp</dimen>
 
     <dimen name="vertical_stepper_title">14sp</dimen>
     <dimen name="vertical_stepper_title_bottom_margin">2dp</dimen>
     <dimen name="vertical_stepper_sub_title">12sp</dimen>
     <dimen name="vertical_stepper_sub_title_bottom_margin">2dp</dimen>
 
-    <dimen name="vertical_stepper_content_view_top_margin">16dp</dimen>
+    <dimen name="vertical_stepper_content_view_top_space">16dp</dimen>
+    <dimen name="vertical_stepper_content_view_bottom_space">24dp</dimen>
 </resources>

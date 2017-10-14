@@ -7,9 +7,14 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Px;
 import android.support.annotation.StyleRes;
+import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.TextViewCompat;
@@ -25,7 +30,7 @@ import android.widget.TextView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-class VerticalStepperView extends RelativeLayout {
+public class VerticalStepperView extends RelativeLayout {
 
     // Will be used only in #onDraw()
     // Initialize or load these values in #init()
@@ -44,19 +49,20 @@ class VerticalStepperView extends RelativeLayout {
     private View mCollapsedContentView;
 
     // Attributes
-
     // Theme of stepper
     @ColorInt private int mActiveThemeColor;
     @ColorInt private int mInactiveThemeColor;
-    @ColorInt private int mStepConnectorLineColor;
-
     // Theme of title
     @StyleRes private int mActiveTitleAppearanceResId;
     @StyleRes private int mInactiveTitleAppearanceResId;
-
     // Theme of sub-title
     @StyleRes private int mActiveSubTitleAppearanceResId;
     @StyleRes private int mInactiveSubTitleAppearanceResId;
+    // THeme of circular-label
+    @ColorInt private int mActiveCircularLabelIconTint;
+    @ColorInt private int mActiveCircularLabelTextTint;
+    @ColorInt private int mInactiveCircularLabelIconTint;
+    @ColorInt private int mInactiveCircularLabelTextTint;
 
     public VerticalStepperView(Context context) {
         super(context);
@@ -79,13 +85,18 @@ class VerticalStepperView extends RelativeLayout {
 
         mActiveThemeColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_primary);
         mInactiveThemeColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_primary);
-        mStepConnectorLineColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_connector_line);
+        mActiveCircularLabelIconTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_icon_tint);
+        mInactiveCircularLabelIconTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_icon_tint);
+        mActiveCircularLabelTextTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_active_circular_label_text_tint);
+        mInactiveCircularLabelTextTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_inactive_circular_label_text_tint);
         mActiveTitleAppearanceResId = R.style.VerticalStepperActiveTitleAppearance;
         mActiveSubTitleAppearanceResId = R.style.VerticalStepperActiveSubTitleAppearance;
         mInactiveTitleAppearanceResId = R.style.VerticalStepperInactiveTitleAppearance;
         mInactiveSubTitleAppearanceResId = R.style.VerticalStepperInactiveSubTitleAppearance;
         @CircularLabelSize int circularLabelSize = CIRCULAR_LABEL_SIZE_REGULAR;
-        @ColorInt int circularLabelIconTint = ContextCompat.getColor(getContext(), R.color.vertical_stepper_circle_icon_tint);
+        @ColorInt int stepConnectionLineColor = ContextCompat.getColor(getContext(), R.color.vertical_stepper_connector_line);
+        @Px int stepConnectionLineWidth = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width);
+        @DrawableRes int completedIconResId = R.drawable.ic_check;
 
         // # Load Attributes from xml
 
@@ -94,21 +105,29 @@ class VerticalStepperView extends RelativeLayout {
 
         mActiveThemeColor = a.getColor(R.styleable.VerticalStepperView_activeThemeColor, mActiveThemeColor);
         mInactiveThemeColor = a.getColor(R.styleable.VerticalStepperView_inactiveThemeColor, mInactiveThemeColor);
-        mStepConnectorLineColor = a.getColor(R.styleable.VerticalStepperView_stepConnectorColor, mStepConnectorLineColor);
+        mActiveCircularLabelIconTint = a.getColor(R.styleable.VerticalStepperView_activeCircularLabelIconTint, mActiveCircularLabelIconTint);
+        mInactiveCircularLabelIconTint = a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelIconTint, mInactiveCircularLabelIconTint);
+        mActiveCircularLabelTextTint = a.getColor(R.styleable.VerticalStepperView_activeCircularLabelTextTint, mActiveCircularLabelTextTint);
+        mInactiveCircularLabelTextTint = a.getColor(R.styleable.VerticalStepperView_inactiveCircularLabelTextTint, mInactiveCircularLabelTextTint);
+        stepConnectionLineColor = a.getColor(R.styleable.VerticalStepperView_stepConnectorColor, stepConnectionLineColor);
+        stepConnectionLineWidth = a.getDimensionPixelSize(R.styleable.VerticalStepperView_stepConnectionLineWidth, stepConnectionLineWidth);
         mActiveTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_activeTitleAppearance, mActiveTitleAppearanceResId);
         mActiveSubTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_activeSubTitleAppearance, mActiveSubTitleAppearanceResId);
         mInactiveTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_inactiveTitleAppearance, mInactiveTitleAppearanceResId);
         mInactiveSubTitleAppearanceResId = a.getResourceId(R.styleable.VerticalStepperView_inactiveSubTitleAppearance, mInactiveSubTitleAppearanceResId);
+        completedIconResId = a.getResourceId(R.styleable.VerticalStepperView_completedIcon, completedIconResId);
 
         switch (a.getInt(R.styleable.VerticalStepperView_circularLabelSize, circularLabelSize)) {
             case CIRCULAR_LABEL_SIZE_REGULAR: circularLabelSize = CIRCULAR_LABEL_SIZE_REGULAR; break;
             case CIRCULAR_LABEL_SIZE_SMALL: circularLabelSize = CIRCULAR_LABEL_SIZE_SMALL; break;
         }
 
-        circularLabelIconTint = a.getColor(R.styleable.VerticalStepperView_circularLabelIconTint, circularLabelIconTint);
         String title = a.getString(R.styleable.VerticalStepperView_title);
         String subTitle = a.getString(R.styleable.VerticalStepperView_subTitle);
         String stepLabel = a.getString(R.styleable.VerticalStepperView_stepLabel);
+        boolean expandContentsByDefault = a.getBoolean(R.styleable.VerticalStepperView_expandContentsByDefault, false);
+        boolean activateStepByDefault = a.getBoolean(R.styleable.VerticalStepperView_activateStepByDefault, false);
+        boolean completeStepByDefault = a.getBoolean(R.styleable.VerticalStepperView_completeStepByDefault, false);
         // Load layout's resource id; -> https://stackoverflow.com/questions/25303979/custom-xml-attribute-to-a-layout-reference
         // And id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
         final int collapsedContentViewResId = a.getResourceId(R.styleable.VerticalStepperView_collapsedContentViewLayout, 0);
@@ -131,9 +150,8 @@ class VerticalStepperView extends RelativeLayout {
         // # For onDraw() method
 
         mStepperConnectionLinePaint = new Paint();
-        mStepperConnectionLinePaint.setColor(mStepConnectorLineColor);
-        mStepperConnectionLinePaint.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width));
-
+        mStepperConnectionLinePaint.setColor(stepConnectionLineColor);
+        mStepperConnectionLinePaint.setStrokeWidth(stepConnectionLineWidth);
         mStepperConnectionLineTopMargin = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_top_margin);
         mStepperConnectionLineBottomMargin = getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_bottom_margin);
 
@@ -150,40 +168,35 @@ class VerticalStepperView extends RelativeLayout {
         //Inflate a content views if an user specify it in a layout XML file
         if (collapsedContentViewResId != 0) {
             setCollapsedContentView(collapsedContentViewResId);
+        } else {
+            setCollapsedContentView(null);
         }
         if (expandedContentViewResId != 0) {
             setExpandedContentView(expandedContentViewResId);
+        } else {
+            setExpandedContentView(null);
         }
 
         setTitle(title);
         setSubTitle(subTitle);
         setStepLabel(stepLabel);
-        setTitleAppearance(mActiveTitleAppearanceResId);
-        setSubTitleAppearance(mActiveSubTitleAppearanceResId);
-        setCircularLabelColor(mActiveThemeColor);
-        setCircularLabelIconTint(circularLabelIconTint);
         setCircularLabelSize(circularLabelSize);
-        expandContentView(true);
+        setCompletedIcon(completedIconResId);
+
+        if (expandContentsByDefault) expandContentView(true); else collapseContentView(true);
+        if (activateStepByDefault) activateStep(true); else inactivateStep(true);
+        if (completeStepByDefault) completeStep(true); else incompleteStep(true);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-        int paddingRight = getPaddingRight();
-        int paddingBottom = getPaddingBottom();
-
-//        int contentWidth = getWidth() - paddingLeft - paddingRight;
-        int contentHeight = getHeight() - paddingTop - paddingBottom;
-
         // # Connection Line
 
         int connectionLineX = mStepperCircleLayout.getLeft() + mStepperCircleLayout.getWidth() / 2;
         int connectionLineStartY = mStepperCircleLayout.getBottom() + mStepperConnectionLineTopMargin;
+        int contentHeight = getHeight() - getPaddingTop() - getPaddingBottom();
         int connectionLineEndY = contentHeight - mStepperConnectionLineBottomMargin;
 
         canvas.drawLine(connectionLineX, connectionLineStartY, connectionLineX, connectionLineEndY, mStepperConnectionLinePaint);
@@ -273,116 +286,192 @@ class VerticalStepperView extends RelativeLayout {
 
     public void expandContentView(boolean enforceUpdate) {
         if (mIsContentViewExpanded && !enforceUpdate) return;
-        if (mCollapsedContentView != null) {
-            mCollapsedContentView.setVisibility(GONE);
-        }
-        if (mExpandedContentView != null) {
-            mExpandedContentView.setVisibility(VISIBLE);
-        }
         mIsContentViewExpanded = true;
+        if (mContentViewContainer.getChildCount() == 0) return;
+
+//        if (mExpandedContentView == null) {
+//            mContentViewContainer.setVisibility(GONE);
+//        } else {
+//            if (mCollapsedContentView != null) {
+//                mCollapsedContentView.setVisibility(GONE);
+//            }
+//            mExpandedContentView.setVisibility(VISIBLE);
+//            if (mContentViewContainer.getVisibility() != VISIBLE) {
+//                mContentViewContainer.setVisibility(VISIBLE);
+//            }
+//        }
+        toggleContentViews(mContentViewContainer, mCollapsedContentView, mExpandedContentView);
     }
 
     public void collapseContentView(boolean enforceUpdate) {
         if (!mIsContentViewExpanded && !enforceUpdate) return;
-        if (mExpandedContentView != null) {
-            mExpandedContentView.setVisibility(GONE);
-        }
-        if (mCollapsedContentView != null) {
-            mCollapsedContentView.setVisibility(VISIBLE);
-        }
+        mIsContentViewExpanded = false;
+        if (mContentViewContainer.getChildCount() == 0) return;
+
+//        if (mCollapsedContentView == null) {
+//            mContentViewContainer.setVisibility(GONE);
+//        } else {
+//            if (mExpandedContentView != null) {
+//                mExpandedContentView.setVisibility(GONE);
+//            }
+//            mCollapsedContentView.setVisibility(VISIBLE);
+//            if (mContentViewContainer.getVisibility() != VISIBLE) {
+//                mContentViewContainer.setVisibility(VISIBLE);
+//            }
+//        }
+
+        toggleContentViews(mContentViewContainer, mExpandedContentView, mCollapsedContentView);
+
         mIsContentViewExpanded = false;
     }
+
+    private void toggleContentViews(@NonNull View container, View willHidden, View willReveal) {
+        if (willReveal == null) {
+            container.setVisibility(GONE);
+        } else {
+            if (willHidden != null) {
+                willHidden.setVisibility(GONE);
+            }
+            willReveal.setVisibility(VISIBLE);
+            if (container.getVisibility() != VISIBLE) {
+                container.setVisibility(VISIBLE);
+            }
+        }
+    }
+
+    public boolean isContentViewExpanded() {
+        return mIsContentViewExpanded;
+    }
+
+    private boolean mIsStepActive;
+
+    public void activateStep(boolean enforceUpdate) {
+        if (mIsStepActive && !enforceUpdate) return;
+        applyCircularLabelColor(mActiveThemeColor);
+        applyCircularLabelIconTint(mActiveCircularLabelIconTint);
+        applyCircularLabelTextTint(mActiveCircularLabelTextTint);
+        applyTitleAppearance(mActiveTitleAppearanceResId);
+        applySubTitleAppearance(mActiveSubTitleAppearanceResId);
+        mIsStepActive = true;
+    }
+
+    public void inactivateStep(boolean enforceUpdate) {
+        if (!mIsStepActive && !enforceUpdate) return;
+        applyCircularLabelColor(mInactiveThemeColor);
+        applyCircularLabelIconTint(mInactiveCircularLabelIconTint);
+        applyCircularLabelTextTint(mInactiveCircularLabelTextTint);
+        applyTitleAppearance(mInactiveTitleAppearanceResId);
+        applySubTitleAppearance(mInactiveSubTitleAppearanceResId);
+        mIsStepActive = false;
+    }
+
+    public boolean isStepActive() {
+        return mIsStepActive;
+    }
+
+    private boolean mIsStepCompleted;
+
+    public void completeStep(boolean enforceUpdate) {
+        if (mIsStepCompleted && !enforceUpdate) return;
+        mStepperCircleTextView.setVisibility(INVISIBLE);
+        mStepperCircleImgView.setVisibility(VISIBLE);
+        mIsStepCompleted = true;
+    }
+
+    public void incompleteStep(boolean enforceUpdate) {
+        if (!mIsStepCompleted && !enforceUpdate) return;
+        mStepperCircleImgView.setVisibility(INVISIBLE);
+        mStepperCircleTextView.setVisibility(VISIBLE);
+        mIsStepCompleted = false;
+    }
+
+    public boolean isStepCompleted() {
+        return mIsStepCompleted;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(flag = true,
+            value = {ANIMATE_EXPAND_CONTENTS, ANIMATE_COLLAPSE_CONTENTS,
+                    ANIMATE_ACTIVATE_STEP, ANIMATE_INACTIVATE_STEP,
+                    ANIMATE_COMPLETE_STEP, ANIMATE_INCOMPLETE_STEP})
+    public @interface ChangingStatusAnimationFlag {}
+    public static final int ANIMATE_EXPAND_CONTENTS = 1;
+    public static final int ANIMATE_COLLAPSE_CONTENTS = 1 << 1;
+    public static final int ANIMATE_ACTIVATE_STEP = 1 << 2;
+    public static final int ANIMATE_INACTIVATE_STEP = 1 << 3;
+    public static final int ANIMATE_COMPLETE_STEP = 1 << 4;
+    public static final int ANIMATE_INCOMPLETE_STEP = 1 << 5;
+
+   public void animateChangingStatus(@ChangingStatusAnimationFlag int flags) {
+       TransitionManager.beginDelayedTransition(this);
+
+       if ((flags & ANIMATE_EXPAND_CONTENTS) != 0) {
+           expandContentView(false);
+       }
+       if ((flags & ANIMATE_COLLAPSE_CONTENTS) != 0) {
+           collapseContentView(false);
+       }
+       if ((flags & ANIMATE_ACTIVATE_STEP) != 0) {
+           activateStep(false);
+       }
+       if ((flags & ANIMATE_INACTIVATE_STEP) != 0) {
+           inactivateStep(false);
+       }
+       if ((flags & ANIMATE_COMPLETE_STEP) != 0) {
+           completeStep(false);
+       }
+       if ((flags & ANIMATE_INCOMPLETE_STEP) != 0) {
+           incompleteStep(false);
+       }
+   }
 
     /**
      * STYLE
      * ----------------------------------------------------------------------------- */
 
-//    public void applyStatus(@NonNull VerticalStepperStatus status, boolean enforceUpdates) {
-//        applyActiveStatus(status.isActive(), enforceUpdates);
-//        applyCompletedStatus(status.isCompleted(), enforceUpdates);
-//        mStepperStatus.copy(status);
-//    }
-//
-//    public void applyStyle(@NonNull VerticalStepperStyle style, boolean enforceUpdates) {
-//        mStepperStyle.copy(style);
-//        // icon
-//        mStepperCircleImgView.setImageResource(style.getCompletedIconRes());
-//        // Stepper Circle Size
-//        applyStepperCircleSize(style.getStepperCircleSize());
-//        // Others
-//        applyStatus(mStepperStatus, enforceUpdates);
-//    }
+    public void setActiveThemeColor(int activeThemeColor) {
+        mActiveThemeColor = activeThemeColor;
+        if (mIsStepActive) {
+            applyCircularLabelColor(activeThemeColor);
+        }
+    }
 
-//    public void applyActiveStatus(boolean isActive, boolean enforceUpdate) {
-//        if (isActive == mStepperStatus.isActive() && !enforceUpdate) return;
-//
-//        // # Stepper Circle Color
-//
-//        int color = ContextCompat.getColor(getContext(),
-//                (isActive) ? mStepperStyle.getActiveColorRes() : mStepperStyle.getInactiveColorRes());
-//
-//        Drawable bg = DrawableCompat.wrap(mStepperCircleTextView.getBackground());
-//        DrawableCompat.setTint(bg, color);
-//        DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
-//
-//        bg = DrawableCompat.wrap(mStepperCircleImgView.getBackground());
-//        DrawableCompat.setTint(bg, color);
-//        DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
-//
-//        // # Title & Sub-Title Appearance
-//
-//        int appearanceResId = (isActive) ? mStepperStyle.getActiveTitleAppearanceRes() : mStepperStyle.getInactiveTitleAppearanceRes();
-//        TextViewCompat.setTextAppearance(mTitleView, appearanceResId);
-//        appearanceResId = (isActive) ? mStepperStyle.getActiveSubTitleAppearanceRes() : mStepperStyle.getInactiveSubTitleAppearanceRes();
-//        TextViewCompat.setTextAppearance(mSubTitleView, appearanceResId);
-//
-//        // Update
-//        mStepperStatus.setActive(isActive);
-//    }
-//
-//    public void applyCompletedStatus(boolean isCompleted, boolean enforceUpdate) {
-//        if (isCompleted == mStepperStatus.isCompleted() && !enforceUpdate) return;
-//
-//        // TODO; ANIMATE WHEN TOGGLE STEPPER CIRCLES
-//        if (isCompleted) {
-//            mStepperCircleTextView.setVisibility(INVISIBLE);
-//            mStepperCircleImgView.setVisibility(VISIBLE);
-//        } else {
-//            mStepperCircleTextView.setVisibility(VISIBLE);
-//            mStepperCircleImgView.setVisibility(INVISIBLE);
-//        }
-//
-//        // Update
-//        mStepperStatus.setCompleted(isCompleted);
-//    }
-//
-//    public void applyStepperCircleSize(@VerticalStepperStyle.CircularLabelSize int size) {
-//        ViewGroup.LayoutParams params = mStepperCircleLayout.getLayoutParams();
-//        int textSize;
-//        int iconPadding;
-//
-//        if (size == VerticalStepperStyle.CIRCULAR_LABEL_SIZE_REGULAR) {
-//            params.width = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_size);
-//            params.height = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_size);
-//            textSize = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_text_size);
-//            iconPadding = getResources().getDimensionPixelSize(R.dimen.vertical_regular_stepper_circle_icon_padding);
-//
-//        } else if (size == VerticalStepperStyle.CIRCULAR_LABEL_SIZE_SMALL) {
-//            params.width = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_size);
-//            params.height = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_size);
-//            textSize = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_text_size);
-//            iconPadding = getResources().getDimensionPixelSize(R.dimen.vertical_small_stepper_circle_icon_padding);
-//
-//        } else {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        mStepperCircleLayout.setLayoutParams(params);
-//        mStepperCircleTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-//        mStepperCircleImgView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
-//    }
+    public void setInactiveThemeColor(int inactiveThemeColor) {
+        mInactiveThemeColor = inactiveThemeColor;
+        if (!mIsStepActive) {
+            applyCircularLabelColor(inactiveThemeColor);
+        }
+    }
 
-    public void setCircularLabelColor(@ColorInt int color) {
+    public void setActiveTitleAppearanceResId(int activeTitleAppearanceResId) {
+        mActiveTitleAppearanceResId = activeTitleAppearanceResId;
+        if (mIsStepActive) {
+            applyTitleAppearance(activeTitleAppearanceResId);
+        }
+    }
+
+    public void setInactiveTitleAppearanceResId(int inactiveTitleAppearanceResId) {
+        mInactiveTitleAppearanceResId = inactiveTitleAppearanceResId;
+        if (mIsStepActive) {
+            applyTitleAppearance(inactiveTitleAppearanceResId);
+        }
+    }
+
+    public void setActiveSubTitleAppearanceResId(int activeSubTitleAppearanceResId) {
+        mActiveSubTitleAppearanceResId = activeSubTitleAppearanceResId;
+        if (!mIsStepActive) {
+            applySubTitleAppearance(activeSubTitleAppearanceResId);
+        }
+    }
+
+    public void setInactiveSubTitleAppearanceResId(int inactiveSubTitleAppearanceResId) {
+        mInactiveSubTitleAppearanceResId = inactiveSubTitleAppearanceResId;
+        if (!mIsStepActive) {
+            applySubTitleAppearance(inactiveSubTitleAppearanceResId);
+        }
+    }
+
+    private void applyCircularLabelColor(@ColorInt int color) {
         Drawable bg = DrawableCompat.wrap(mStepperCircleTextView.getBackground());
         DrawableCompat.setTint(bg, color);
         DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
@@ -392,11 +481,11 @@ class VerticalStepperView extends RelativeLayout {
         DrawableCompat.setTintMode(bg, PorterDuff.Mode.SRC_IN);
     }
 
-    public void setTitleAppearance(@StyleRes int appearanceResId) {
+    private void applyTitleAppearance(@StyleRes int appearanceResId) {
         TextViewCompat.setTextAppearance(mTitleView, appearanceResId);
     }
 
-    public void setSubTitleAppearance(@StyleRes int appearanceResId) {
+    private void applySubTitleAppearance(@StyleRes int appearanceResId) {
         TextViewCompat.setTextAppearance(mSubTitleView, appearanceResId);
     }
 
@@ -435,7 +524,54 @@ class VerticalStepperView extends RelativeLayout {
         mStepperCircleImgView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
     }
 
-    public void setCircularLabelIconTint(@ColorInt int color) {
+    public void setActiveCircularLabelIconTint(@ColorInt int activeCircularLabelIconTint) {
+        mActiveCircularLabelIconTint = activeCircularLabelIconTint;
+        if (mIsStepActive) {
+            applyCircularLabelIconTint(activeCircularLabelIconTint);
+        }
+    }
+
+    public void setActiveCircularLabelTextTint(@ColorInt int activeCircularLabelTextTint) {
+        mActiveCircularLabelTextTint = activeCircularLabelTextTint;
+        if (mIsStepActive) {
+            applyCircularLabelTextTint(activeCircularLabelTextTint);
+        }
+    }
+
+    public void setInactiveCircularLabelIconTint(@ColorInt int inactiveCircularLabelIconTint) {
+        mInactiveCircularLabelIconTint = inactiveCircularLabelIconTint;
+        if (!mIsStepActive) {
+            applyCircularLabelIconTint(inactiveCircularLabelIconTint);
+        }
+    }
+
+    public void setInactiveCircularLabelTextTint(@ColorInt int inactiveCircularLabelTextTint) {
+        mInactiveCircularLabelTextTint = inactiveCircularLabelTextTint;
+        if (!mIsStepActive) {
+            applyCircularLabelTextTint(inactiveCircularLabelTextTint);
+        }
+    }
+
+    private void applyCircularLabelIconTint(@ColorInt int color) {
         mStepperCircleImgView.setColorFilter(color);
+    }
+
+    private void applyCircularLabelTextTint(@ColorInt int color) {
+        mStepperCircleTextView.setTextColor(color);
+    }
+
+    public void setCompletedIcon(@DrawableRes int iconResId) {
+        mStepperCircleImgView.setImageResource(iconResId);
+    }
+
+    public void setStepConnectionLineWidth(@Dimension int widthInDip) {
+        mStepperConnectionLinePaint.setStrokeWidth(
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, widthInDip, getResources().getDisplayMetrics()));
+        invalidate();
+    }
+
+    public void setStepperConnectionLineColor(@ColorInt int color) {
+        mStepperConnectionLinePaint.setColor(color);
+        invalidate();
     }
 }

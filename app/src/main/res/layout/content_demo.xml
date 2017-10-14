@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/rl_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,13 +16,57 @@
         <!--android:layout_height="match_parent"/>-->
 
     <com.f_candy_d.verticalsteppers.VerticalStepperView
+        android:id="@+id/stepper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/action_settings"
         app:subTitle="@string/appbar_scrolling_view_behavior"
         app:stepLabel="1"
-        app:collapsedContentViewLayout="@layout/collapsed_content"
-        app:expandedContentViewLayout="@layout/expanded_content"
-        app:circularLabelIconTint="@color/colorAccent"/>
+        app:expandContentsByDefault="true"
+        app:expandedContentViewLayout="@layout/expanded_content"/>
+
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_above="@+id/toggle_all">
+
+        <Button
+            android:id="@+id/toggle_expanded_collapsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="expand"
+            android:layout_margin="8dp"/>
+
+        <Button
+            android:id="@+id/toggle_active_inactive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="active"
+            android:layout_margin="8dp"/>
+
+        <Button
+            android:id="@+id/toggle_completed_incompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="complete"
+            android:layout_margin="8dp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/toggle_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="toggle all"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="90dp"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
