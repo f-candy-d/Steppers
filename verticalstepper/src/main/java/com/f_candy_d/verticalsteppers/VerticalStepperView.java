@@ -297,6 +297,29 @@ public class VerticalStepperView extends RelativeLayout {
         return removed;
     }
 
+    public boolean hasExpandedContentView() {
+        return (mExpandedContentView != null);
+    }
+
+    public boolean hasCollapsedContentView() {
+        return (mCollapsedContentView != null);
+    }
+
+    /**
+     * This method has package-private visibility
+     */
+    ViewGroup getContentViewContainer() {
+        return mContentViewContainer;
+    }
+
+    public View getExpandedContentView() {
+        return mExpandedContentView;
+    }
+
+    public View getCollapsedContentView() {
+        return mCollapsedContentView;
+    }
+
     /**
      * STATUS
      * ----------------------------------------------------------------------------- */

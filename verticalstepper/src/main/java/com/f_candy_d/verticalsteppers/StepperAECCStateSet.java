@@ -6,15 +6,15 @@ package com.f_candy_d.verticalsteppers;
  * 'StepperAECCStateSet' means 'Stepper And Expanded Content and Collapsed content State Set'.
  */
 
-public class StepperAECCStateSet<T, T2> extends StepperACCStateSet<T> {
+public class StepperAECCStateSet<C, E> extends StepperACCStateSet<C> {
 
-    private T2 mExpandedContentState;
+    private E mExpandedContentState;
 
-    public T2 getExpandedContentState() {
+    public E getExpandedContentState() {
         return mExpandedContentState;
     }
 
-    public void setExpandedContentState(T2 expandedContentState) {
+    public void setExpandedContentState(E expandedContentState) {
         mExpandedContentState = expandedContentState;
     }
 }
