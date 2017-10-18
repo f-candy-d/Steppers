@@ -49,9 +49,9 @@ abstract public class BaseVerticalStepperAdapter<
     }
 
     @Override
-    public View onCreateCollapsedContentView(ViewGroup parent, int contentViewType) {
-        if (contentViewType != CONTENT_VIEW_TYPE_EMPTY_VIEW) {
-            ContentViewHolder holder = onCreateCollapsedContentViewHolder(parent, contentViewType);
+    public final View onCreateCollapsedContentView(ViewGroup parent, int contentViewType) {
+        ContentViewHolder holder = onCreateCollapsedContentViewHolder(parent, contentViewType);
+        if (holder != null) {
             holder.setContentViewType(contentViewType);
             return holder.getContentView();
         }
@@ -59,9 +59,9 @@ abstract public class BaseVerticalStepperAdapter<
     }
 
     @Override
-    public View onCreateExpandedContentView(ViewGroup parent, int contentViewType) {
-        if (contentViewType != CONTENT_VIEW_TYPE_EMPTY_VIEW) {
-            ContentViewHolder holder = onCreateExpandedContentViewHolder(parent, contentViewType);
+    public final View onCreateExpandedContentView(ViewGroup parent, int contentViewType) {
+        ContentViewHolder holder = onCreateExpandedContentViewHolder(parent, contentViewType);
+        if (holder != null) {
             holder.setContentViewType(contentViewType);
             return holder.getContentView();
         }
@@ -71,11 +71,11 @@ abstract public class BaseVerticalStepperAdapter<
     protected void onBindCollapsedViewHolder(C holder, int position) {}
     protected void onBindExpandedViewHolder(E holder, int position) {}
 
-    // 'contentViewType' would never be the save as 'CONTENT_VIEW_TYPE_EMPTY_VIEW'
-    @NonNull abstract
-    protected ContentViewHolder onCreateCollapsedContentViewHolder(ViewGroup parent, int contentViewType);
-    @NonNull abstract
-    protected ContentViewHolder onCreateExpandedContentViewHolder(ViewGroup parent, int contentViewType);
+    // Return null if 'contentViewType' equals to CONTENT_VIEW_TYPE_EMPTY_VIEW
+    @Nullable abstract
+    protected C onCreateCollapsedContentViewHolder(ViewGroup parent, int contentViewType);
+    @Nullable abstract
+    protected E onCreateExpandedContentViewHolder(ViewGroup parent, int contentViewType);
 
     // Use this constant variable as a view type of 'no content view'
     public static final int CONTENT_VIEW_TYPE_EMPTY_VIEW = ContentViewRecycler.CONTENT_VIEW_TYPE_EMPTY_VIEW;
@@ -147,6 +147,10 @@ abstract public class BaseVerticalStepperAdapter<
 
         public View getContentView() {
             return mContentView;
+        }
+
+        public VerticalStepperView getParentStepperView() {
+            return (VerticalStepperView) mContentView.getParent().getParent().getParent();
         }
     }
 }

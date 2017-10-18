@@ -1,5 +1,7 @@
 package com.f_candy_d.verticalsteppers;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by daichi on 10/14/17.
  */
@@ -9,6 +11,14 @@ public class StepperStateSet {
     private boolean mIsContentViewExpanded;
     private boolean mIsStepActive;
     private boolean mIsStepCompleted;
+
+    public StepperStateSet() {}
+
+    public StepperStateSet(StepperStateSet source) {
+        mIsContentViewExpanded = source.isContentViewExpanded();
+        mIsStepActive = source.isStepActive();
+        mIsStepCompleted = source.isStepCompleted();
+    }
 
     public boolean isContentViewExpanded() {
         return mIsContentViewExpanded;
