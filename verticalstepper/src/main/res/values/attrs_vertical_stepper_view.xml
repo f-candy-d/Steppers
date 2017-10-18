@@ -6,6 +6,8 @@
         <attr name="stepLabel" format="string"/>
         <attr name="collapsedContentViewLayout" format="reference"/>
         <attr name="expandedContentViewLayout" format="reference"/>
+        <attr name="headerContentViewLayout" format="reference"/>
+        <attr name="footerContentViewLayout" format="reference"/>
         <attr name="activeThemeColor" format="color"/>
         <attr name="inactiveThemeColor" format="color"/>
         <attr name="stepConnectorColor" format="color"/>

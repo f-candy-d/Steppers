@@ -21,7 +21,7 @@
 
     <Button
         android:layout_margin="8dp"
-        android:id="@+id/vertical_stepper_view_usage"
+        android:id="@+id/vertical_stepper_view_usage_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="VERTICAL-STEPPER-VIEW usage"/>

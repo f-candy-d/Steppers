@@ -33,24 +33,19 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stepper, parent, false);
         final ViewHolder holder = new ViewHolder(view);
-        // collapsed content view
-        view = holder.stepperView.setCollapsedContentView(R.layout.collapsed_content);
-//        view.findViewById(R.id.expand_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                holder.stepperView.animateChangingStatus(VerticalStepperView.ANIMATE_EXPAND_CONTENTS);
-//            }
-//        });
-//        // expanded contnet view
-//        view = holder.stepperView.setExpandedContentView(R.layout.expanded_content);
-//        view.findViewById(R.id.collapse_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                holder.stepperView.animateChangingStatus(VerticalStepperView.ANIMATE_COLLAPSE_CONTENTS);
-//            }
-//        });
-
-        Log.d("Mylog", "expand -> " + holder.stepperView.getExpandedContentView().toString() + " | collapsed -> " + holder.stepperView.getCollapsedContentView().toString());
+        // footer content view
+        view = holder.stepperView.getFooterContentView();
+        view.findViewById(R.id.toggle_status_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VerticalStepperView stepperView = holder.stepperView;
+                @VerticalStepperView.ChangingStatusAnimationFlag int flags = 0;
+                flags |= (stepperView.isContentViewExpanded()) ? VerticalStepperView.ANIMATE_COLLAPSE_CONTENTS : VerticalStepperView.ANIMATE_EXPAND_CONTENTS;
+                flags |= (stepperView.isStepActive()) ? VerticalStepperView.ANIMATE_INACTIVATE_STEP : VerticalStepperView.ANIMATE_ACTIVATE_STEP;
+                flags |= (stepperView.isStepCompleted()) ? VerticalStepperView.ANIMATE_INCOMPLETE_STEP : VerticalStepperView.ANIMATE_COMPLETE_STEP;
+                stepperView.animateChangingStatus(flags);
+            }
+        });
 
         return holder;
     }
@@ -63,6 +58,9 @@ public class DemoAdapter extends RecyclerView.Adapter<DemoAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.stepperView.applyStatusSet(mStateSetList.get(position), false);
+        holder.stepperView.setTitle("Stepper title for position " + position);
+        holder.stepperView.setSubTitle("Step summary for position " + position + " if needed...");
+        holder.stepperView.setStepLabel(position + 1);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

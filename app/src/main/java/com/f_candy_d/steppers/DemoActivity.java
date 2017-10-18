@@ -29,6 +29,14 @@ public class DemoActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.vertical_stepper_view_usage_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DemoActivity.this, VerticalStepperViewUsageActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

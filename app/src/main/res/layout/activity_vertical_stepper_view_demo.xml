@@ -14,11 +14,11 @@
         app:title="Step title"
         app:subTitle="Summary of step if needed..."
         app:stepLabel="1"
-        app:collapsedContentViewLayout="@layout/collapsed_content"
-        app:expandedContentViewLayout="@layout/expanded_content"
         app:activateStepByDefault="false"
         app:completeStepByDefault="false"
-        app:expandContentsByDefault="false"/>
+        app:expandContentsByDefault="false"
+        app:expandedContentViewLayout="@layout/expanded_content"
+        app:collapsedContentViewLayout="@layout/collapsed_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"

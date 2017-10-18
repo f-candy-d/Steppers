@@ -57,11 +57,22 @@
             android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_margin"/>
 
         <FrameLayout
+            android:id="@+id/header_content_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/vertical_stepper_header_content_view_top_space"/>
+
+        <FrameLayout
             android:id="@+id/content_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/vertical_stepper_content_view_bottom_space"
             android:paddingTop="@dimen/vertical_stepper_content_view_top_space"/>
+
+        <FrameLayout
+            android:id="@+id/footer_content_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/vertical_stepper_footer_content_view_top_space"/>
 
     </LinearLayout>
 

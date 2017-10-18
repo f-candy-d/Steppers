@@ -52,6 +52,8 @@ public class VerticalStepperView extends RelativeLayout {
     private FrameLayout mContentViewContainer;
     private View mExpandedContentView;
     private View mCollapsedContentView;
+    private View mHeaderContentView;
+    private View mFooterContentView;
 
     // Attributes
     // Theme of stepper
@@ -164,8 +166,8 @@ public class VerticalStepperView extends RelativeLayout {
         setSubTitle(a.getString(R.styleable.VerticalStepperView_subTitle));
 
         // Content Views
-        // And id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
 
+        // id = 0 is a invalid resource id; -> https://stackoverflow.com/questions/5130789/android-resource-ids
         int contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_collapsedContentViewLayout, 0);
         if (contentViewResId != 0) {
             setCollapsedContentView(contentViewResId);
@@ -178,6 +180,20 @@ public class VerticalStepperView extends RelativeLayout {
             setExpandedContentView(contentViewResId);
         } else {
             setExpandedContentView(null);
+        }
+
+        contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_headerContentViewLayout, 0);
+        if (contentViewResId != 0) {
+            setHeaderContentView(contentViewResId);
+        } else {
+            setHeaderContentView(null);
+        }
+
+        contentViewResId = a.getResourceId(R.styleable.VerticalStepperView_footerContentViewLayout, 0);
+        if (contentViewResId != 0) {
+            setFooterContentView(contentViewResId);
+        } else {
+            setFooterContentView(null);
         }
 
         // Default status
@@ -252,7 +268,12 @@ public class VerticalStepperView extends RelativeLayout {
         if (view != null) {
             mContentViewContainer.addView(view);
             mExpandedContentView = view;
-            mContentViewContainer.setVisibility(VISIBLE);
+            // Invalidate
+            if (mIsContentViewExpanded) {
+                expandContentView(true);
+            } else {
+                collapseContentView(true);
+            }
         }
     }
 
@@ -267,7 +288,12 @@ public class VerticalStepperView extends RelativeLayout {
         if (view != null) {
             mContentViewContainer.addView(view);
             mCollapsedContentView = view;
-            mContentViewContainer.setVisibility(VISIBLE);
+            // Invalidate
+            if (!mIsContentViewExpanded) {
+                collapseContentView(true);
+            } else {
+                expandContentView(true);
+            }
         }
     }
 
@@ -303,6 +329,86 @@ public class VerticalStepperView extends RelativeLayout {
 
     public boolean hasCollapsedContentView() {
         return (mCollapsedContentView != null);
+    }
+
+    public View setHeaderContentView(@LayoutRes int layoutId) {
+        View view = inflate(getContext(), layoutId, null);
+        setHeaderContentView(view);
+        return view;
+    }
+
+    public void setHeaderContentView(View view) {
+        swapHeaderContentView(view);
+    }
+
+    public View setFooterContentView(@LayoutRes int layoutId) {
+        View view = inflate(getContext(), layoutId, null);
+        setFooterContentView(view);
+        return view;
+    }
+
+    public void setFooterContentView(View view) {
+        swapFooterContentView(view);
+    }
+
+    public View removeHeaderContentView() {
+        return swapHeaderContentView(null);
+    }
+
+    public View removeFooterContentView() {
+        return swapFooterContentView(null);
+    }
+
+    public View swapHeaderContentView(View view) {
+        ViewGroup container = findViewById(R.id.header_content_container);
+        if (mHeaderContentView != null) {
+            container.removeView(mHeaderContentView);
+        }
+
+        View removed = mHeaderContentView;
+        mHeaderContentView = view;
+        if (view != null) {
+            container.addView(view);
+            container.setVisibility(VISIBLE);
+        } else {
+            container.setVisibility(GONE);
+        }
+
+        return removed;
+    }
+
+    public View swapFooterContentView(View view) {
+        ViewGroup container = findViewById(R.id.footer_content_container);
+        if (mFooterContentView != null) {
+            container.removeView(mFooterContentView);
+        }
+
+        View removed = mFooterContentView;
+        mFooterContentView = view;
+        if (view != null) {
+            container.addView(view);
+            container.setVisibility(VISIBLE);
+        } else {
+            container.setVisibility(GONE);
+        }
+
+        return removed;
+    }
+
+    public boolean hasHeaderContentView() {
+        return (mHeaderContentView != null);
+    }
+
+    public boolean hasFooterContentView() {
+        return (mFooterContentView != null);
+    }
+
+    public View getHeaderContentView() {
+        return mHeaderContentView;
+    }
+
+    public View getFooterContentView() {
+        return mFooterContentView;
     }
 
     /**
@@ -361,8 +467,17 @@ public class VerticalStepperView extends RelativeLayout {
     private boolean mIsStepActive;
 
     public void activateStep(boolean enforceUpdate) {
+        activateStep(enforceUpdate, false);
+    }
+
+    public void activateStep(boolean enforceUpdate, boolean animate) {
         if (mIsStepActive && !enforceUpdate) return;
-        toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
+        if (animate) {
+            toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
+        } else {
+            setCircularLabelBackgroundColorDrawable(DRAWABLE_ID_ACTIVE_CIRCULAR_LABEL_BG);
+        }
+
         applyCircularLabelIconTint(mActiveCircularLabelIconTint);
         applyCircularLabelTextTint(mActiveCircularLabelTextTint);
         applyTitleAppearance(mActiveTitleAppearanceResId);
@@ -371,8 +486,16 @@ public class VerticalStepperView extends RelativeLayout {
     }
 
     public void inactivateStep(boolean enforceUpdate) {
+        inactivateStep(enforceUpdate, false);
+    }
+
+    public void inactivateStep(boolean enforceUpdate, boolean animate) {
         if (!mIsStepActive && !enforceUpdate) return;
-        toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
+        if (animate) {
+            toggleCircularLabelBackgroundColorDrawable(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
+        } else {
+            setCircularLabelBackgroundColorDrawable(DRAWABLE_ID_INACTIVE_CIRCULAR_LABEL_BG);
+        }
         applyCircularLabelIconTint(mInactiveCircularLabelIconTint);
         applyCircularLabelTextTint(mInactiveCircularLabelTextTint);
         applyTitleAppearance(mInactiveTitleAppearanceResId);
@@ -385,6 +508,10 @@ public class VerticalStepperView extends RelativeLayout {
     private void toggleCircularLabelBackgroundColorDrawable(int layerIdToTranslate) {
         mCircularLabelBgDrawableHelper.translateDrawable(layerIdToTranslate,
                 TOGGLE_CIRCULAR_LABEL_BACKGROUND_COLOR_DURATION);
+    }
+
+    private void setCircularLabelBackgroundColorDrawable(int layerIdToTranslate) {
+        mCircularLabelBgDrawableHelper.translateDrawable(layerIdToTranslate, 0);
     }
 
     public boolean isStepActive() {
@@ -449,7 +576,7 @@ public class VerticalStepperView extends RelativeLayout {
     public static final int ANIMATE_INCOMPLETE_STEP = 1 << 5;
 
    public void animateChangingStatus(@ChangingStatusAnimationFlag int flags) {
-       TransitionManager.beginDelayedTransition(this);
+       TransitionManager.beginDelayedTransition((ViewGroup) getParent());
 
        if ((flags & ANIMATE_EXPAND_CONTENTS) != 0) {
            expandContentView(false);
@@ -458,10 +585,10 @@ public class VerticalStepperView extends RelativeLayout {
            collapseContentView(false);
        }
        if ((flags & ANIMATE_ACTIVATE_STEP) != 0) {
-           activateStep(false);
+           activateStep(false, true);
        }
        if ((flags & ANIMATE_INACTIVATE_STEP) != 0) {
-           inactivateStep(false);
+           inactivateStep(false, true);
        }
        if ((flags & ANIMATE_COMPLETE_STEP) != 0) {
            completeStep(false);
