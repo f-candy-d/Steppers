@@ -1,4 +1,4 @@
-package com.f_candy_d.verticalsteppers;
+package com.f_candy_d.verticalsteppers.component;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;

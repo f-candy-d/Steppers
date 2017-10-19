@@ -16,14 +16,14 @@
         android:layout_marginLeft="@dimen/vertical_stepper_left_space"
         android:layout_marginStart="@dimen/vertical_stepper_left_space">
 
-        <com.f_candy_d.verticalsteppers.TwoFacedImageViewLayout
+        <com.f_candy_d.verticalsteppers.component.TwoFacedImageViewLayout
             android:id="@+id/circle_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:firstViewLayout="@layout/stepper_component_circle_bg"
             app:secondViewLayout="@layout/stepper_component_circle_bg"/>
 
-        <com.f_candy_d.verticalsteppers.TwoFacedViewLayout
+        <com.f_candy_d.verticalsteppers.component.TwoFacedViewLayout
             android:id="@+id/circle_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,7 +42,7 @@
         android:layout_toEndOf="@+id/circle_layout"
         android:layout_marginBottom="@dimen/vertical_stepper_bottom_space">
 
-        <com.f_candy_d.verticalsteppers.TwoFacedTextViewLayout
+        <com.f_candy_d.verticalsteppers.component.TwoFacedTextViewLayout
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             app:secondViewLayout="@layout/stepper_component_inactive_title"
             android:layout_marginBottom="@dimen/vertical_stepper_title_bottom_space"/>
 
-        <com.f_candy_d.verticalsteppers.TwoFacedTextViewLayout
+        <com.f_candy_d.verticalsteppers.component.TwoFacedTextViewLayout
             android:id="@+id/sub_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

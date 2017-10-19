@@ -1,4 +1,4 @@
-package com.f_candy_d.verticalsteppers;
+package com.f_candy_d.verticalsteppers.component;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import com.f_candy_d.verticalsteppers.R;
 
 /**
  * Created by daichi on 10/18/17.

@@ -22,6 +22,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.f_candy_d.verticalsteppers.component.TwoFacedImageViewLayout;
+import com.f_candy_d.verticalsteppers.component.TwoFacedTextViewLayout;
+import com.f_candy_d.verticalsteppers.component.TwoFacedViewLayout;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -50,7 +54,7 @@ public class VerticalStepper extends RelativeLayout {
     private static final int VIEW_FACE_CIRCLE_LABEL_ICON = 1;
     private TwoFacedViewLayout mCircleLabelView;
 
-    // Content
+    // Content View
     private FrameLayout mContentViewContainer;
 
     // Connection Line
@@ -130,7 +134,7 @@ public class VerticalStepper extends RelativeLayout {
             case CIRCLE_SIZE_SMALL: setCircleSize(CIRCLE_SIZE_SMALL); break;
         }
 
-        // # Content
+        // # Content View
 
         mContentViewContainer = findViewById(R.id.content_view_container);
         addContentView(a.getResourceId(R.styleable.VerticalStepperView_contentViewLayout, 0));
@@ -308,13 +312,16 @@ public class VerticalStepper extends RelativeLayout {
     }
 
     /**
-     * CONTENT
+     * CONTENT VIEW
      * ----------------------------------------------------------------------------- */
 
     public View addContentView(@LayoutRes int resId) {
-        View view = (resId != 0) ? inflate(getContext(), resId, null) : null;
-        addContentView(view);
-        return view;
+        if (resId != 0) {
+            View view = inflate(getContext(), resId, mContentViewContainer);
+            invalidateContentViewContainerVisibility();
+            return view;
+        }
+        return null;
     }
 
     public void addContentView(View view) {
