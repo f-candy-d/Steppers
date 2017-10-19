@@ -27,7 +27,8 @@ import com.f_candy_d.verticalsteppers.component.TwoFacedTextViewLayout;
 import com.f_candy_d.verticalsteppers.component.TwoFacedViewLayout;
 
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class VerticalStepper extends RelativeLayout {
 
@@ -122,7 +123,7 @@ public class VerticalStepper extends RelativeLayout {
         setCircleTextLabel(a.getString(R.styleable.VerticalStepperView_circleTextLabel));
         setCircleTextLabelTint(a.getColor(R.styleable.VerticalStepperView_circleTextLabelTint,
                 ContextCompat.getColor(getContext(), R.color.vertical_stepper_circle_text_label_tint)));
-        setCircleIconLabel(a.getResourceId(R.styleable.VerticalStepperView_circleIconLabel, 0));
+        setCircleIconLabel(a.getResourceId(R.styleable.VerticalStepperView_circleIconLabel, R.drawable.ic_check));
         setCircleIconLabelTint(a.getColor(R.styleable.VerticalStepperView_circleIconLabelTint,
                 ContextCompat.getColor(getContext(), R.color.vertical_stepper_circle_icon_label_tint)));
 
@@ -148,6 +149,20 @@ public class VerticalStepper extends RelativeLayout {
                 ContextCompat.getColor(getContext(), R.color.vertical_stepper_connection_line)));
         mConnectionLinePaint.setStrokeWidth(getResources().getDimensionPixelSize(R.dimen.vertical_stepper_connection_line_width));
 
+        // # Default Step Mode
+
+        if (a.getBoolean(R.styleable.VerticalStepperView_activateStepByDefault, false)) {
+            activateStep();
+        } else {
+            inactivateStep();
+        }
+
+        if (a.getBoolean(R.styleable.VerticalStepperView_checkStepByDefault, false)) {
+            checkStep();
+        } else {
+            uncheckStep();
+        }
+
         a.recycle();
 
         // # Add ripple-effect to myself
@@ -161,7 +176,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * TITLE
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public void setTitle(String title) {
         mTitleView.setText(title);
@@ -187,7 +202,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * SUB TITLE
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public void setSubTitle(String subTitle) {
         mSubTitleView.setText(subTitle);
@@ -213,12 +228,12 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CIRCLE
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     /**
      * The following constants are defined in res/values/attrs.xml with enum tag
      */
-    @Retention(RetentionPolicy.SOURCE)
+    @Retention(SOURCE)
     @IntDef({CIRCLE_SIZE_SMALL, CIRCLE_SIZE_REGULAR})
     public @interface CircleSize {}
     public static final int CIRCLE_SIZE_SMALL = 0;
@@ -252,7 +267,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CIRCLE (BG)
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public void setActiveCircleBackgroundColor(@ColorInt int color) {
         mCircleBgView.setTintTo(color, VIEW_FACE_CIRCLE_ACTIVE_BG);
@@ -264,7 +279,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CIRCLE (TEXT LABEL)
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public void setCircleTextLabel(String label) {
         ((TextView) mCircleLabelView.getViewById(VIEW_FACE_CIRCLE_LABEL_TEXT)).setText(label);
@@ -276,7 +291,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CIRCLE (ICON LABEL)
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public void setCircleIconLabel(@DrawableRes int resId) {
         if (resId != 0) {
@@ -290,7 +305,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CONNECTION LINE
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -313,7 +328,7 @@ public class VerticalStepper extends RelativeLayout {
 
     /**
      * CONTENT VIEW
-     * ----------------------------------------------------------------------------- */
+     * ---------- */
 
     public View addContentView(@LayoutRes int resId) {
         if (resId != 0) {
@@ -349,5 +364,111 @@ public class VerticalStepper extends RelativeLayout {
         } else {
             mContentViewContainer.setVisibility(GONE);
         }
+    }
+
+    /**
+     * STEPPER'S STATE MODE
+     * ---------- */
+
+    @Retention(SOURCE)
+    @IntDef(
+            flag = true,
+            value = {STEP_MODE_ACTIVE, STEP_MODE_INACTIVE, STEP_MODE_CHECKED, STEP_MODE_UNCHECKED})
+    public @interface StepMode {}
+    public static final int STEP_MODE_ACTIVE = 1;
+    public static final int STEP_MODE_INACTIVE = 1 << 1;
+    public static final int STEP_MODE_CHECKED = 1 << 2;
+    public static final int STEP_MODE_UNCHECKED = 1 << 3;
+
+    private @StepMode int mCurrentStepModeFlags = 0;
+
+    public void setStepMode(@StepMode int flags) {
+        if ((flags & STEP_MODE_ACTIVE) != 0) {
+            activateStep();
+        }
+        if ((flags & STEP_MODE_INACTIVE) != 0) {
+            inactivateStep();
+        }
+        if ((flags & STEP_MODE_CHECKED) != 0) {
+            checkStep();
+        }
+        if ((flags & STEP_MODE_UNCHECKED) != 0) {
+            uncheckStep();
+        }
+
+        mCurrentStepModeFlags = flags;
+    }
+
+    public void activateStep() {
+        mTitleView.setCurrentView(VIEW_FACE_ACTIVE_TITLE);
+        mSubTitleView.setCurrentView(VIEW_FACE_ACTIVE_SUB_TITLE);
+        mCircleBgView.setCurrentView(VIEW_FACE_CIRCLE_ACTIVE_BG);
+
+        mCurrentStepModeFlags |= STEP_MODE_ACTIVE;
+        // Remove the opposite state flag from the current flags
+        mCurrentStepModeFlags &= ~STEP_MODE_INACTIVE;
+    }
+
+    public void inactivateStep() {
+        mTitleView.setCurrentView(VIEW_FACE_INACTIVE_TITLE);
+        mSubTitleView.setCurrentView(VIEW_FACE_INACTIVE_SUB_TITLE);
+        mCircleBgView.setCurrentView(VIEW_FACE_CIRCLE_INACTIVE_BG);
+
+        mCurrentStepModeFlags |= STEP_MODE_INACTIVE;
+        mCurrentStepModeFlags &= ~STEP_MODE_ACTIVE;
+    }
+
+    public void checkStep() {
+        mCircleLabelView.setCurrentView(VIEW_FACE_CIRCLE_LABEL_ICON);
+
+        mCurrentStepModeFlags |= STEP_MODE_CHECKED;
+        mCurrentStepModeFlags &= ~STEP_MODE_UNCHECKED;
+    }
+
+    public void uncheckStep() {
+        mCircleLabelView.setCurrentView(VIEW_FACE_CIRCLE_LABEL_TEXT);
+
+        mCurrentStepModeFlags |= STEP_MODE_UNCHECKED;
+        mCurrentStepModeFlags &= ~STEP_MODE_CHECKED;
+    }
+
+    public boolean isStepActive() {
+        return ((mCurrentStepModeFlags & STEP_MODE_ACTIVE) != 0);
+    }
+
+    public boolean isStepInactive() {
+        return ((mCurrentStepModeFlags & STEP_MODE_INACTIVE) != 0);
+    }
+
+    public boolean isStepChecked() {
+        return ((mCurrentStepModeFlags & STEP_MODE_CHECKED) != 0);
+    }
+
+    public boolean isStepUnchecked() {
+        return ((mCurrentStepModeFlags & STEP_MODE_UNCHECKED) != 0);
+    }
+
+    public int getCurrentStepModeFlags() {
+        return mCurrentStepModeFlags;
+    }
+
+    public void toggleStepActiveMode() {
+        if (isStepActive()) {
+            inactivateStep();
+        } else {
+            activateStep();
+        }
+    }
+
+    public void toggleStepCheckMode() {
+        if (isStepChecked()) {
+            uncheckStep();
+        } else {
+            checkStep();
+        }
+    }
+
+    public void toggleStepModes() {
+        setStepMode(~mCurrentStepModeFlags);
     }
 }

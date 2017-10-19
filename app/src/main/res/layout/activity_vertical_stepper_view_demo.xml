@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/rl_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,6 +9,7 @@
     tools:context="com.f_candy_d.steppers.VerticalStepperViewDemoActivity">
 
     <com.f_candy_d.verticalsteppers.VerticalStepper
+        android:id="@+id/vertical_stepper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/app_name"
@@ -24,22 +26,16 @@
         android:padding="24dp">
 
         <Button
-            android:id="@+id/expand_collapse_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="expand / collapse"/>
-
-        <Button
             android:id="@+id/activate_inactivate_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="activate / inactivate"/>
 
         <Button
-            android:id="@+id/complete_incomplete_btn"
+            android:id="@+id/check_uncheck_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="complete / incomplete"/>
+            android:text="check / uncheck"/>
 
         <Button
             android:id="@+id/toggle_all_btn"
@@ -48,5 +44,4 @@
             android:text="toggle all"/>
 
     </LinearLayout>
-
 </RelativeLayout>

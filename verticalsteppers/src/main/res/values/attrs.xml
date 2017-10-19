@@ -27,6 +27,9 @@
         <attr name="contentViewLayout" format="reference"/>
         <!-- Connection Line -->
         <attr name="connectionLineColor" format="color"/>
+        <!-- Step Mode -->
+        <attr name="activateStepByDefault" format="boolean"/>
+        <attr name="checkStepByDefault" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="TwoFacedViewLayoutBase">
