@@ -15,7 +15,6 @@
         app:title="@string/app_name"
         app:subTitle="@string/appbar_scrolling_view_behavior"
         app:circleTextLabel="2"
-        app:circleSize="small"
         app:contentViewLayout="@layout/vertical_stepper_content"/>
 
     <LinearLayout
@@ -26,22 +25,28 @@
         android:padding="24dp">
 
         <Button
-            android:id="@+id/activate_inactivate_btn"
+            android:id="@+id/toggle_circle_size_mode_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="activate / inactivate"/>
+            android:text="toggle circle size"/>
 
         <Button
-            android:id="@+id/check_uncheck_btn"
+            android:id="@+id/toggle_active_mode_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="check / uncheck"/>
+            android:text="toggle active mode"/>
 
         <Button
-            android:id="@+id/toggle_all_btn"
+            android:id="@+id/toggle_check_mode_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="toggle all"/>
+            android:text="toggle check mode"/>
+
+        <Button
+            android:id="@+id/toggle_all_modes_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="toggle all modes"/>
 
     </LinearLayout>
 </RelativeLayout>

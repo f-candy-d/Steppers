@@ -130,7 +130,7 @@ public class VerticalStepper extends RelativeLayout {
         // # Circle
 
         mCircleLayout = findViewById(R.id.circle_layout);
-        switch (a.getInt(R.styleable.VerticalStepperView_circleSize, CIRCLE_SIZE_REGULAR)) {
+        switch (a.getInt(R.styleable.VerticalStepperView_circleSize, CIRCLE_SIZE_SMALL)) {
             case CIRCLE_SIZE_REGULAR: setCircleSize(CIRCLE_SIZE_REGULAR); break;
             case CIRCLE_SIZE_SMALL: setCircleSize(CIRCLE_SIZE_SMALL); break;
         }
