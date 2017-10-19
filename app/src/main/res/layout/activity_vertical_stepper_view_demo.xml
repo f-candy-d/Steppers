@@ -7,18 +7,13 @@
     android:layout_height="match_parent"
     tools:context="com.f_candy_d.steppers.VerticalStepperViewDemoActivity">
 
-    <com.f_candy_d.verticalsteppers.VerticalStepperView
-        android:id="@+id/vertical_stepper_view"
+    <com.f_candy_d.verticalsteppers.VerticalStepper
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="Step title"
-        app:subTitle="Summary of step if needed..."
-        app:stepLabel="1"
-        app:activateStepByDefault="false"
-        app:completeStepByDefault="false"
-        app:expandContentsByDefault="false"
-        app:expandedContentViewLayout="@layout/expanded_content"
-        app:collapsedContentViewLayout="@layout/collapsed_content"/>
+        app:title="@string/app_name"
+        app:subTitle="@string/appbar_scrolling_view_behavior"
+        app:circleTextLabel="2"
+        app:circleSize="small"/>
 
     <LinearLayout
         android:layout_width="match_parent"

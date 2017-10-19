@@ -21,6 +21,29 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_demo"/>
+    <LinearLayout
+        android:id="@+id/rl_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <Button
+            android:layout_margin="8dp"
+            android:id="@+id/vertical_stepper_view_demo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VERTICAL-STEPPER-VIEW DEMO"/>
+
+        <Button
+            android:layout_margin="8dp"
+            android:id="@+id/vertical_stepper_view_usage_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="VERTICAL-STEPPER-VIEW usage"/>
+
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
