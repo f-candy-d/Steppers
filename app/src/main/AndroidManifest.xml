@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".VerticalStepperViewDemoActivity">
         </activity>
-        <activity android:name=".VerticalStepperViewUsageActivity">
+        <activity android:name=".VerticalSteppersDemoActivity">
         </activity>
     </application>
 

@@ -6,10 +6,14 @@ import android.support.transition.AutoTransition;
 import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by daichi on 10/19/17.
@@ -79,6 +83,19 @@ public class VerticalStepperListView extends RecyclerView {
 
     public void beginPartialItemTransition() {
         beginPartialItemTransition(new AutoTransition());
+    }
+
+    /**
+     * Call this method to setup vertical steppers ui.
+     */
+    public void build(@NonNull Context context, List<Step> steps) {
+        if (steps == null) {
+            steps = new ArrayList<>(0);
+        }
+
+        setLayoutManager(new LinearLayoutManager(context));
+        VerticalStepperAdapter adapter = new VerticalStepperAdapter(steps, this);
+        setAdapter(adapter);
     }
 
     private static class PreventableItemAnimator extends DefaultItemAnimator {

@@ -28,7 +28,7 @@ public class DemoActivity extends AppCompatActivity {
         findViewById(R.id.vertical_stepper_view_usage_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DemoActivity.this, VerticalStepperViewUsageActivity.class);
+                Intent intent = new Intent(DemoActivity.this, VerticalSteppersDemoActivity.class);
                 startActivity(intent);
             }
         });

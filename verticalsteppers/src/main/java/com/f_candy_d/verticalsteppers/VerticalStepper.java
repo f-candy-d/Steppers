@@ -285,6 +285,10 @@ public class VerticalStepper extends RelativeLayout {
         ((TextView) mCircleLabelView.getViewById(VIEW_FACE_CIRCLE_LABEL_TEXT)).setText(label);
     }
 
+    public void setCircleTextLabel(int label) {
+        setCircleTextLabel(String.valueOf(label));
+    }
+
     public void setCircleTextLabelTint(@ColorInt int color) {
         ((TextView) mCircleLabelView.getViewById(VIEW_FACE_CIRCLE_LABEL_TEXT)).setTextColor(color);
     }
@@ -364,6 +368,11 @@ public class VerticalStepper extends RelativeLayout {
         } else {
             mContentViewContainer.setVisibility(GONE);
         }
+    }
+
+    /* Intentional package-private */
+    ViewGroup getContentViewContainer() {
+        return mContentViewContainer;
     }
 
     /**
