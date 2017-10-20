@@ -41,6 +41,7 @@ public class VerticalStepperAdapter
      */
     @Override
     public StepViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d("mylog", "onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_step, parent, false);
         return new StepViewHolder(view, this);
@@ -50,10 +51,15 @@ public class VerticalStepperAdapter
     public void onBindViewHolder(StepViewHolder holder, int position) {
         Step step = mSteps.get(position);
 
+        Log.d("mylog", "onBindViewHolder / holder.bindingStepUid=" + holder.bindingStepUid + " != step.getUid()=" + step.getUid());
+
         if (holder.bindingStepUid != step.getUid()) {
             step.build(holder.stepper, this, false);
+            Log.d("mylog", "1 parent => " + step.getCollapsedContentView().getParent());
             holder.stepper.removeAllContentViews();
+            Log.d("mylog", "2 parent => " + step.getCollapsedContentView().getParent());
             holder.stepper.addContentView(step.getCollapsedContentView());
+            Log.d("mylog", "3 parent => " + step.getCollapsedContentView().getParent());
             holder.stepper.addContentView(step.getExpandedContentView());
 
             holder.bindingStepUid = step.getUid();
@@ -172,6 +178,7 @@ public class VerticalStepperAdapter
 
         StepViewHolder(View view, final StepClickListener listener) {
             super(view);
+            Log.d("mylog", "constructor of StepViewHolder");
             stepper = view.findViewById(R.id.stepper);
             stepper.setOnClickListener(new View.OnClickListener() {
                 @Override

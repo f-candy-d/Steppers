@@ -21,8 +21,6 @@ import java.util.List;
 
 public class VerticalStepperListView extends RecyclerView {
 
-    private PreventableItemAnimator mPreventableItemAnimator;
-
     private final View.OnTouchListener TOUCH_EATER = new OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -32,22 +30,14 @@ public class VerticalStepperListView extends RecyclerView {
 
     public VerticalStepperListView(Context context) {
         super(context);
-        init();
     }
 
     public VerticalStepperListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public VerticalStepperListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
-    }
-
-    private void init() {
-        mPreventableItemAnimator = new PreventableItemAnimator();
-        setItemAnimator(mPreventableItemAnimator);
     }
 
     /**
@@ -63,7 +53,6 @@ public class VerticalStepperListView extends RecyclerView {
 
             @Override
             public void onTransitionEnd(@NonNull Transition transition) {
-                mPreventableItemAnimator.setPreventMoveAnimation(false);
                 setOnTouchListener(null);
             }
 
@@ -78,7 +67,6 @@ public class VerticalStepperListView extends RecyclerView {
         });
 
         TransitionManager.beginDelayedTransition(this, transition);
-        mPreventableItemAnimator.setPreventMoveAnimation(true);
     }
 
     public void beginPartialItemTransition() {
@@ -86,33 +74,50 @@ public class VerticalStepperListView extends RecyclerView {
     }
 
     /**
-     * Call this method to setup vertical steppers ui.
+     * If you use this method, attach a Adapter to this RecyclerView manually.
      */
-    public void build(@NonNull Context context, List<Step> steps) {
+    public VerticalStepperAdapter build(@NonNull Context context, List<Step> steps) {
+        return build(context, steps, true);
+    }
+
+        /**
+         * Call this method to setup vertical steppers ui.
+         */
+    public VerticalStepperAdapter build(@NonNull Context context, List<Step> steps, boolean attachAdapterToRecyclerView) {
         if (steps == null) {
             steps = new ArrayList<>(0);
         }
 
-        setLayoutManager(new LinearLayoutManager(context));
+        super.setLayoutManager(new LinearLayoutManager(context));
         VerticalStepperAdapter adapter = new VerticalStepperAdapter(steps, this);
-        setAdapter(adapter);
+        if (attachAdapterToRecyclerView) {
+            setAdapter(adapter);
+        }
+
+        // > RecyclerView use both of ViewHolder for smooth animation from an old state to a new.
+        // > This is default behaviour of RecyclerView.ItemAnimator.
+        // > You can disable animation by passing an empty item animator to RecyclerView.
+        // See more -> https://stackoverflow.com/questions/30667014/why-recyclerview-notifyitemchanged-will-create-a-new-viewholder-and-use-both-t
+        super.setItemAnimator(null);
+
+        return adapter;
     }
 
-    private static class PreventableItemAnimator extends DefaultItemAnimator {
+    /**
+     * Do not use this method
+     */
+    @Override
+    public void setItemAnimator(ItemAnimator animator) {
+        throw new RuntimeException(
+                "Do not use this method, this RecyclerView cannot has a ItemAnimator");
+    }
 
-        private boolean mPreventMoveAnimation = false;
-
-        void setPreventMoveAnimation(boolean preventMoveAnimation) {
-            mPreventMoveAnimation = preventMoveAnimation;
-        }
-
-        @Override
-        public boolean animateMove(ViewHolder holder, int fromX, int fromY, int toX, int toY) {
-            if (mPreventMoveAnimation) {
-                dispatchMoveFinished(holder);
-                return false;
-            }
-            return super.animateMove(holder, fromX, fromY, toX, toY);
-        }
+    /**
+     * Do not use this method
+     */
+    @Override
+    public void setLayoutManager(LayoutManager layout) {
+        throw new RuntimeException("" +
+                "Do not use this method, use VerticalStepperListView#build() method to setup vertical steppers");
     }
 }
