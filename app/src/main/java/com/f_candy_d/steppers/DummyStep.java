@@ -1,6 +1,5 @@
 package com.f_candy_d.steppers;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +17,6 @@ public class DummyStep extends Step {
     public DummyStep(int uid, int order) {
         super(uid);
         mOrder = order;
-    }
-
-    @Override
-    protected View onCreateExpandedContentView(ViewGroup parent) {
-        return null;
-    }
-
-    @Override
-    protected View onCreateCollapsedContentView(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.vertical_stepper_content, parent, false);
-        Log.d("mylog", "onCreateCollapsedContentView / view's parent -> " + view.getParent());
-        return view;
     }
 
     @Override
@@ -55,6 +41,42 @@ public class DummyStep extends Step {
 
     @Override
     protected void onStepClick() {
-        setStepActivated(!isStepActivated());
+        toggleAllStepStatus();
+    }
+
+    @Override
+    protected ContentViewHolder onCreateCollapsedContentViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.vertical_stepper_collapsed_content, parent, false);
+        return new CollapsedContentViewHolder(view);
+    }
+
+    @Override
+    protected ContentViewHolder onCreateExpandedContentViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.vertical_stepper_expanded_content, parent, false);
+        return new ExpandedContentViewHolder(view);
+    }
+
+    /**
+     * COLLAPSED CONTENT VIEW HOLDER
+     * ---------- */
+
+    static class CollapsedContentViewHolder extends Step.ContentViewHolder {
+
+        CollapsedContentViewHolder(View view) {
+            super(view);
+        }
+    }
+
+    /**
+     * EXPANDED CONTENT VIEW HOLDER
+     * ---------- */
+
+    static class ExpandedContentViewHolder extends Step.ContentViewHolder {
+
+        ExpandedContentViewHolder(View view) {
+            super(view);
+        }
     }
 }

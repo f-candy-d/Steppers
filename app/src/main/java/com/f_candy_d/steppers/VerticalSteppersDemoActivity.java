@@ -17,7 +17,7 @@ public class VerticalSteppersDemoActivity extends AppCompatActivity {
 
         VerticalStepperListView stepperListView = (VerticalStepperListView) findViewById(R.id.vertical_steppers);
         ArrayList<Step> steps = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 5; ++i) {
             steps.add(new DummyStep(i, i));
         }
         stepperListView.build(this, steps);

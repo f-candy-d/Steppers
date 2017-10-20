@@ -15,7 +15,7 @@
         app:title="@string/app_name"
         app:subTitle="@string/appbar_scrolling_view_behavior"
         app:circleTextLabel="2"
-        app:contentViewLayout="@layout/vertical_stepper_content"/>
+        app:contentViewLayout="@layout/vertical_stepper_expanded_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"

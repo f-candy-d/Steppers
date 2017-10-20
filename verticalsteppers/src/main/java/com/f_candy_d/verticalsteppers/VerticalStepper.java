@@ -80,7 +80,6 @@ public class VerticalStepper extends RelativeLayout {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-        Log.d("mylog", "init VerticalStepper");
         // Load the layout file & attributes
         inflate(getContext(), R.layout.vertical_stepper, this);
         final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.VerticalStepperView, defStyle, 0);
@@ -340,10 +339,8 @@ public class VerticalStepper extends RelativeLayout {
         if (resId != 0) {
             View view = inflate(getContext(), resId, mContentViewContainer);
             invalidateContentViewContainerVisibility();
-            Log.d("mylog", "addContentViewFromId(" + view + ") / mContentViewContainer.getChildCount() = " + mContentViewContainer.getChildCount());
             return view;
         }
-        Log.d("mylog", "addContentViewFromId(null) / mContentViewContainer.getChildCount() = " + mContentViewContainer.getChildCount());
         return null;
     }
 
@@ -352,7 +349,6 @@ public class VerticalStepper extends RelativeLayout {
             mContentViewContainer.addView(view);
         }
         invalidateContentViewContainerVisibility();
-        Log.d("mylog", "addContentView(" + view + ") / mContentViewContainer.getChildCount() = " + mContentViewContainer.getChildCount());
     }
 
     public void removeContentView(View view) {
@@ -363,14 +359,7 @@ public class VerticalStepper extends RelativeLayout {
     }
 
     public void removeAllContentViews() {
-        Log.d("mylog", "removeAllContentViews / mContentViewContainer.getChildCount() = " + mContentViewContainer.getChildCount());
-//        mContentViewContainer.removeAllViews();
-        for (int i = mContentViewContainer.getChildCount() - 1; 0 <= i; --i) {
-            View view = mContentViewContainer.getChildAt(i);
-            Log.d("mylog", i + " BEFORE removeAllContentViews / parent -> " + view.getParent());
-            mContentViewContainer.removeViewAt(i);
-            Log.d("mylog", i + " AFTER removeAllContentViews / parent -> " + view.getParent());
-        }
+        mContentViewContainer.removeAllViews();
         invalidateContentViewContainerVisibility();
     }
 

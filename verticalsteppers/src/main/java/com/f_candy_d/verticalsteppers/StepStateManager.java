@@ -9,4 +9,9 @@ interface StepStateManager {
     void onChangeStepExpandedState(Step step);
     void onChangeStepActivatedState(Step step);
     void onChangeStepCheckedState(Step step);
+    void onChangeStepStatus(
+            Step step,
+            boolean isExpandStateChanged,
+            boolean isActiveStateChanged,
+            boolean isCheckedStateChanged);
 }

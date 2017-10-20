@@ -45,6 +45,7 @@ public class VerticalStepperListView extends RecyclerView {
      * See more -> https://gist.github.com/yatatsu/6a60e1a0c384bb91ddec68951341f561
      */
     public void beginPartialItemTransition(@NonNull Transition transition) {
+        final ItemAnimator attachedItemAnimator = getItemAnimator();
         transition.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(@NonNull Transition transition) {
@@ -53,6 +54,7 @@ public class VerticalStepperListView extends RecyclerView {
 
             @Override
             public void onTransitionEnd(@NonNull Transition transition) {
+                VerticalStepperListView.this.setItemAnimator(attachedItemAnimator);
                 setOnTouchListener(null);
             }
 
@@ -67,6 +69,7 @@ public class VerticalStepperListView extends RecyclerView {
         });
 
         TransitionManager.beginDelayedTransition(this, transition);
+        setItemAnimator(null);
     }
 
     public void beginPartialItemTransition() {
@@ -94,22 +97,7 @@ public class VerticalStepperListView extends RecyclerView {
             setAdapter(adapter);
         }
 
-        // > RecyclerView use both of ViewHolder for smooth animation from an old state to a new.
-        // > This is default behaviour of RecyclerView.ItemAnimator.
-        // > You can disable animation by passing an empty item animator to RecyclerView.
-        // See more -> https://stackoverflow.com/questions/30667014/why-recyclerview-notifyitemchanged-will-create-a-new-viewholder-and-use-both-t
-        super.setItemAnimator(null);
-
         return adapter;
-    }
-
-    /**
-     * Do not use this method
-     */
-    @Override
-    public void setItemAnimator(ItemAnimator animator) {
-        throw new RuntimeException(
-                "Do not use this method, this RecyclerView cannot has a ItemAnimator");
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.f_candy_d.verticalsteppers;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -10,13 +9,8 @@ import android.view.ViewGroup;
 
 abstract public class Step {
 
-    public static final int INVALID_UID = -1;
-
     // Uid must be a non-negative integer
     private final int mUid;
-    private boolean mIsAlreadyBuilded = false;
-    private View mExpandedContentView;
-    private View mCollapsedContentView;
     private StepStateManager mStepStateManager;
 
     // Step status
@@ -40,62 +34,13 @@ abstract public class Step {
         mIsStepChecked = isStepChecked;
     }
 
+    /**
+     * GETTER & SETTER
+     * ---------- */
+
     /* Intentional package-private */
-    void build(VerticalStepper parentStepper, StepStateManager stepStateManager, boolean enforceBuild) {
-        if (mIsAlreadyBuilded && !enforceBuild) return;
+    void setStepStateManager(StepStateManager stepStateManager) {
         mStepStateManager = stepStateManager;
-        mExpandedContentView = onCreateExpandedContentView(parentStepper.getContentViewContainer());
-        mCollapsedContentView = onCreateCollapsedContentView(parentStepper.getContentViewContainer());
-//        Log.d("mylog", "build / view's parent -> " + mCollapsedContentView.getParent());
-        mIsAlreadyBuilded = true;
-    }
-
-    /* Intentional package-private */
-    View getExpandedContentView() {
-        return mExpandedContentView;
-    }
-
-    /* Intentional package-private */
-    View getCollapsedContentView() {
-//        Log.d("mylog", "getCollapsedContentView / view's parent -> " + mCollapsedContentView.getParent());
-        return mCollapsedContentView;
-    }
-
-    /* Intentional package-private */
-    boolean hasExpandedContentView() {
-        return mExpandedContentView != null;
-    }
-
-    /* Intentional package-private */
-    boolean hasCollapsedContentView() {
-        return mCollapsedContentView != null;
-    }
-
-    public boolean isStepExpanded() {
-        return mIsStepExpanded;
-    }
-
-    public boolean isStepActivated() {
-        return mIsStepActivated;
-    }
-
-    public boolean isStepChecked() {
-        return mIsStepChecked;
-    }
-
-    public void setStepExpanded(boolean stepExpanded) {
-        mIsStepExpanded = stepExpanded;
-        mStepStateManager.onChangeStepExpandedState(this);
-    }
-
-    public void setStepActivated(boolean stepActivated) {
-        mIsStepActivated = stepActivated;
-        mStepStateManager.onChangeStepActivatedState(this);
-    }
-
-    public void setStepChecked(boolean stepChecked) {
-        mIsStepChecked = stepChecked;
-        mStepStateManager.onChangeStepCheckedState(this);
     }
 
     public int getUid() {
@@ -103,13 +48,10 @@ abstract public class Step {
     }
 
     /**
-     * Do not attach a created view to 'parent' in these methods.
-     */
-    abstract protected View onCreateExpandedContentView(ViewGroup parent);
-    abstract protected View onCreateCollapsedContentView(ViewGroup parent);
+     * STEPPER'S DATA
+     * ---------- */
 
     abstract public int getOrder();
-
     abstract public String getTitle();
     abstract public String getSubTitle();
     abstract public int getNumberLabel();
@@ -125,6 +67,113 @@ abstract public class Step {
      * method and return TRUE in it.
      */
     public String getTextLabel() { return null; }
+
+    /**
+     * STEPPER'S STATE
+     * ---------- */
+
+    public boolean isStepExpanded() {
+        return mIsStepExpanded;
+    }
+
+    public boolean isStepActivated() {
+        return mIsStepActivated;
+    }
+
+    public boolean isStepChecked() {
+        return mIsStepChecked;
+    }
+
+    public void setStepExpanded(boolean stepExpanded) {
+        mIsStepExpanded = stepExpanded;
+        if (mStepStateManager != null) {
+            mStepStateManager.onChangeStepExpandedState(this);
+        }
+    }
+
+    public void setStepActivated(boolean stepActivated) {
+        mIsStepActivated = stepActivated;
+        if (mStepStateManager != null) {
+            mStepStateManager.onChangeStepActivatedState(this);
+        }
+    }
+
+    public void setStepChecked(boolean stepChecked) {
+        mIsStepChecked = stepChecked;
+        if (mStepStateManager != null) {
+            mStepStateManager.onChangeStepCheckedState(this);
+        }
+    }
+
+    public void setStepStatusAtSameTime(
+            boolean isStepExpanded,
+            boolean isStepChecked,
+            boolean isStepActivated) {
+
+        boolean isExpandedStateChanged = mIsStepExpanded != isStepExpanded;
+        boolean isActivatedStateChanged = mIsStepActivated != isStepActivated;
+        boolean isCheckedStateChanged = mIsStepChecked != isStepChecked;
+
+        mIsStepExpanded = isStepExpanded;
+        mIsStepActivated = isStepActivated;
+        mIsStepChecked = isStepChecked;
+
+        if (mStepStateManager != null) {
+            mStepStateManager.onChangeStepStatus(
+                    this, isExpandedStateChanged, isActivatedStateChanged, isCheckedStateChanged);
+        }
+    }
+
+    public void toggleAllStepStatus() {
+        setStepStatusAtSameTime(!isStepExpanded(), !isStepChecked(), !isStepActivated());
+    }
+
+    public void toggleIsStepExpanded() {
+        setStepExpanded(!isStepExpanded());
+    }
+
+    public void toggleIsStepActivated() {
+        setStepActivated(!isStepActivated());
+    }
+
+    public void toggleIsStepChecked() {
+        setStepChecked(!isStepChecked());
+    }
+
+    /**
+     * EXPANDED / COLLAPSED CONTENT VIEW
+     * ---------- */
+
+    abstract public static class ContentViewHolder {
+
+        public View contentRoot;
+
+        public ContentViewHolder(View view) {
+            if (view == null) {
+                throw new NullPointerException(
+                        "The first parameter can not be a null");
+            }
+            contentRoot = view;
+        }
+    }
+
+    /**
+     * Do not attach a inflated view to 'parent' in this method.
+     */
+    protected ContentViewHolder onCreateExpandedContentViewHolder(ViewGroup parent) {
+        return null;
+    }
+
+    /**
+     * Do not attach a inflated view to 'parent' in this method.
+     */
+    protected ContentViewHolder onCreateCollapsedContentViewHolder(ViewGroup parent) {
+        return null;
+    }
+
+    /**
+     * UTILS
+     * ---------- */
 
     /**
      * Override this method if you want to handle a step's click event.
