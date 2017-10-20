@@ -90,7 +90,6 @@ public class VerticalStepperAdapter
 
     @Override
     public void onBindViewHolder(StepViewHolder holder, int position, List<Object> payloads) {
-        Log.d("mylog", "payloads -> " + payloads.size());
         // On full bind
         if (payloads.size() == 0) {
             onBindViewHolder(holder, position);
