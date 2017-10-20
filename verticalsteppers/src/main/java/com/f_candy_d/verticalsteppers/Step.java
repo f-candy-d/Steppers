@@ -48,7 +48,7 @@ abstract public class Step {
     }
 
     /**
-     * STEPPER'S DATA
+     * STEP DATA
      * ---------- */
 
     abstract public String getTitle();
@@ -68,7 +68,7 @@ abstract public class Step {
     public String getTextLabel() { return null; }
 
     /**
-     * STEPPER'S STATE
+     * STEP STATE
      * ---------- */
 
     public boolean isStepExpanded() {
@@ -83,19 +83,19 @@ abstract public class Step {
         return mIsStepChecked;
     }
 
-    public void setStepExpanded(boolean stepExpanded) {
-        mIsStepExpanded = stepExpanded;
+    public void setStepExpanded(boolean isStepExpanded) {
+        mIsStepExpanded = isStepExpanded;
     }
 
-    public void setStepActivated(boolean stepActivated) {
-        mIsStepActivated = stepActivated;
+    public void setStepActivated(boolean isStepActivated) {
+        mIsStepActivated = isStepActivated;
     }
 
-    public void setStepChecked(boolean stepChecked) {
-        mIsStepChecked = stepChecked;
+    public void setStepChecked(boolean isStepChecked) {
+        mIsStepChecked = isStepChecked;
     }
 
-    public void setStepStatusAtSameTime(
+    public void setStepStatus(
             boolean isStepExpanded,
             boolean isStepActivated,
             boolean isStepChecked) {
@@ -106,7 +106,7 @@ abstract public class Step {
     }
 
     public void toggleAllStepStatus() {
-        setStepStatusAtSameTime(!isStepExpanded(), !isStepChecked(), !isStepActivated());
+        setStepStatus(!isStepExpanded(), !isStepActivated(), !isStepChecked());
     }
 
     public void toggleIsStepExpanded() {
@@ -129,19 +129,19 @@ abstract public class Step {
 
     public void notifyStepExpandedStateChanged() {
         if (mStepStateObserver != null) {
-            mStepStateObserver.onChangeStepExpandedState(this);
+            mStepStateObserver.onStepExpandedStateChanged(this);
         }
     }
 
     public void notifyStepActivatedStateChanged() {
         if (mStepStateObserver != null) {
-            mStepStateObserver.onChangeStepActivatedState(this);
+            mStepStateObserver.onStepActivatedStateChanged(this);
         }
     }
 
     public void notifyStepCheckedStateChanged() {
         if (mStepStateObserver != null) {
-            mStepStateObserver.onChangeStepCheckedState(this);
+            mStepStateObserver.onStepCheckedStateChanged(this);
         }
     }
 
@@ -151,7 +151,7 @@ abstract public class Step {
             boolean isCheckedStateChanged) {
 
         if (mStepStateObserver != null) {
-            mStepStateObserver.onChangeStepStatus(this,
+            mStepStateObserver.onStepStatusChanged(this,
                     isExpandStateChanged,
                     isActiveStateChanged,
                     isCheckedStateChanged);
@@ -159,7 +159,7 @@ abstract public class Step {
     }
 
     /**
-     * EXPANDED / COLLAPSED CONTENT VIEW
+     * EXPANDED (COLLAPSED) CONTENT VIEW
      * ---------- */
 
     abstract public static class ContentViewHolder {
@@ -190,11 +190,18 @@ abstract public class Step {
     }
 
     /**
-     * UTILS
+     * TOUCH EVENT
      * ---------- */
 
     /**
-     * Override this method if you want to handle a step's click event.
+     * Override this method if you want to handle a stepper's click event.
      */
     protected void onStepClick() {}
+
+    /**
+     * Override this method if you want to handle a stepper's long click event.
+     *
+     * @return {@link Step#onStepClick()} will be not called if return TRUE.
+     */
+    protected boolean onStepLongClick() { return false; }
 }

@@ -38,6 +38,14 @@ public class DummyStep extends Step {
     }
 
     @Override
+    protected boolean onStepLongClick() {
+        toggleIsStepChecked();
+        notifyStepCheckedStateChanged();
+
+        return true;
+    }
+
+    @Override
     protected ContentViewHolder onCreateCollapsedContentViewHolder(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.vertical_stepper_collapsed_content, parent, false);

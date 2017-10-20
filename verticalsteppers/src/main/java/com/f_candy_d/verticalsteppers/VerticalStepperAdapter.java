@@ -201,6 +201,13 @@ public class VerticalStepperAdapter
         }
     }
 
+    @Override
+    public boolean onStepLongClicked(StepViewHolder holder) {
+        int adpPos = holder.getAdapterPosition();
+        return (0 <= adpPos && adpPos < mParentManager.getStepCount() &&
+                mParentManager.getStepAt(adpPos).onStepLongClick());
+    }
+
     /**
      * VIEW HOLDER
      * ---------- */
@@ -220,6 +227,12 @@ public class VerticalStepperAdapter
                 @Override
                 public void onClick(View view) {
                     listener.onStepClicked(StepViewHolder.this);
+                }
+            });
+            this.stepper.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    return listener.onStepLongClicked(StepViewHolder.this);
                 }
             });
         }

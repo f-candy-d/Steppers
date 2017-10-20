@@ -26,6 +26,10 @@ public class StepManager implements StepStateObserver {
 
     private boolean mIsBuildAlreadyFinished = false;
 
+    /**
+     * Call this method to setup vertical-steppers.
+     * Steps must be added to StepManager before call this method.
+     */
     public void build(Context context, VerticalStepperListView stepperListView) {
         if (mIsBuildAlreadyFinished) return;
 
@@ -42,6 +46,22 @@ public class StepManager implements StepStateObserver {
     }
 
     /**
+     * GETTER
+     * ---------- */
+
+    public VerticalStepperListView getStepperListView() {
+        return mStepperListView;
+    }
+
+    public VerticalStepperAdapter getStepperAdapter() {
+        return mStepperAdapter;
+    }
+
+    public boolean isBuildAlreadyFinished() {
+        return mIsBuildAlreadyFinished;
+    }
+
+    /**
      * ADD STEP
      * ---------- */
 
@@ -50,11 +70,65 @@ public class StepManager implements StepStateObserver {
     }
 
     public void addStep(int position, @NonNull Step step) {
-        if (mIsBuildAlreadyFinished) {
+        if (isBuildAlreadyFinished()) {
             throw new IllegalStateException(
                     "Steps must be added to StepManager before call #build() method");
         }
         mSteps.add(position, step);
+    }
+
+    /**
+     * MANAGE STEP'S STATE
+     * ---------- */
+
+    public void setStepExpandedAt(int position, boolean isStepExpanded) {
+        Step step = mSteps.get(position);
+        if (step.isStepExpanded() != isStepExpanded) {
+            step.setStepExpanded(isStepExpanded);
+            if (isBuildAlreadyFinished()) {
+                onStepExpandedStateChanged(step);
+            }
+        }
+    }
+
+    public void setStepActivatedAt(int position, boolean isStepActivated) {
+        Step step = mSteps.get(position);
+        if (step.isStepActivated() != isStepActivated) {
+            step.setStepActivated(isStepActivated);
+            if (isBuildAlreadyFinished()) {
+                onStepActivatedStateChanged(step);
+            }
+        }
+    }
+
+    public void setStepCheckedAt(int position, boolean isStepChecked) {
+        Step step = mSteps.get(position);
+        if (step.isStepChecked() != isStepChecked) {
+            step.setStepChecked(isStepChecked);
+            if (isBuildAlreadyFinished()) {
+                onStepCheckedStateChanged(step);
+            }
+        }
+    }
+
+    public void setStepStatusAt(
+            int position,
+            boolean isStepExpanded,
+            boolean isStepActivated,
+            boolean isStepChecked) {
+
+        Step step = mSteps.get(position);
+        boolean isExpandedStateChanged = step.isStepExpanded() != isStepExpanded;
+        boolean isActivatedStateChanged = step.isStepActivated() != isStepActivated;
+        boolean isCheckedStateChanged = step.isStepChecked() != isStepChecked;
+        step.setStepStatus(isStepExpanded, isStepActivated, isStepChecked);
+
+        if (isBuildAlreadyFinished()) {
+            onStepStatusChanged(step,
+                    isExpandedStateChanged,
+                    isActivatedStateChanged,
+                    isCheckedStateChanged);
+        }
     }
 
     /**
@@ -95,7 +169,7 @@ public class StepManager implements StepStateObserver {
      * ---------- */
 
     @Override
-    public void onChangeStepExpandedState(Step step) {
+    public void onStepExpandedStateChanged(Step step) {
         int position = getStepPositionForUid(step.getUid());
         if (position != INVALID_POSITION) {
             mStepperListView.beginPartialItemTransition();
@@ -104,7 +178,7 @@ public class StepManager implements StepStateObserver {
     }
 
     @Override
-    public void onChangeStepActivatedState(Step step) {
+    public void onStepActivatedStateChanged(Step step) {
         int position = getStepPositionForUid(step.getUid());
         if (position != INVALID_POSITION) {
             mStepperListView.beginPartialItemTransition();
@@ -113,7 +187,7 @@ public class StepManager implements StepStateObserver {
     }
 
     @Override
-    public void onChangeStepCheckedState(Step step) {
+    public void onStepCheckedStateChanged(Step step) {
         int position = getStepPositionForUid(step.getUid());
         if (position != INVALID_POSITION) {
             mStepperListView.beginPartialItemTransition();
@@ -122,10 +196,10 @@ public class StepManager implements StepStateObserver {
     }
 
     @Override
-    public void onChangeStepStatus(Step step,
-                                   boolean isExpandStateChanged,
-                                   boolean isActiveStateChanged,
-                                   boolean isCheckedStateChanged) {
+    public void onStepStatusChanged(Step step,
+                                    boolean isExpandStateChanged,
+                                    boolean isActiveStateChanged,
+                                    boolean isCheckedStateChanged) {
 
         int position = getStepPositionForUid(step.getUid());
         if (position != INVALID_POSITION) {
