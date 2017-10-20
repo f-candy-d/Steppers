@@ -11,7 +11,7 @@ abstract public class Step {
 
     // Uid must be a non-negative integer
     private final int mUid;
-    private StepStateManager mStepStateManager;
+    private StepStateObserver mStepStateObserver;
 
     // Step status
     private boolean mIsStepExpanded;
@@ -39,8 +39,8 @@ abstract public class Step {
      * ---------- */
 
     /* Intentional package-private */
-    void setStepStateManager(StepStateManager stepStateManager) {
-        mStepStateManager = stepStateManager;
+    void setStepStateObserver(StepStateObserver stepStateObserver) {
+        mStepStateObserver = stepStateObserver;
     }
 
     public int getUid() {
@@ -51,7 +51,6 @@ abstract public class Step {
      * STEPPER'S DATA
      * ---------- */
 
-    abstract public int getOrder();
     abstract public String getTitle();
     abstract public String getSubTitle();
     abstract public int getNumberLabel();
@@ -86,42 +85,24 @@ abstract public class Step {
 
     public void setStepExpanded(boolean stepExpanded) {
         mIsStepExpanded = stepExpanded;
-        if (mStepStateManager != null) {
-            mStepStateManager.onChangeStepExpandedState(this);
-        }
     }
 
     public void setStepActivated(boolean stepActivated) {
         mIsStepActivated = stepActivated;
-        if (mStepStateManager != null) {
-            mStepStateManager.onChangeStepActivatedState(this);
-        }
     }
 
     public void setStepChecked(boolean stepChecked) {
         mIsStepChecked = stepChecked;
-        if (mStepStateManager != null) {
-            mStepStateManager.onChangeStepCheckedState(this);
-        }
     }
 
     public void setStepStatusAtSameTime(
             boolean isStepExpanded,
-            boolean isStepChecked,
-            boolean isStepActivated) {
+            boolean isStepActivated,
+            boolean isStepChecked) {
 
-        boolean isExpandedStateChanged = mIsStepExpanded != isStepExpanded;
-        boolean isActivatedStateChanged = mIsStepActivated != isStepActivated;
-        boolean isCheckedStateChanged = mIsStepChecked != isStepChecked;
-
-        mIsStepExpanded = isStepExpanded;
-        mIsStepActivated = isStepActivated;
-        mIsStepChecked = isStepChecked;
-
-        if (mStepStateManager != null) {
-            mStepStateManager.onChangeStepStatus(
-                    this, isExpandedStateChanged, isActivatedStateChanged, isCheckedStateChanged);
-        }
+        setStepExpanded(isStepExpanded);
+        setStepActivated(isStepActivated);
+        setStepChecked(isStepChecked);
     }
 
     public void toggleAllStepStatus() {
@@ -138,6 +119,43 @@ abstract public class Step {
 
     public void toggleIsStepChecked() {
         setStepChecked(!isStepChecked());
+    }
+
+    /**
+     * NOTIFY CHANGING STATE TO OBSERVER
+     *
+     * Call the following methods to update a certain stepper view.
+     * ---------- */
+
+    public void notifyStepExpandedStateChanged() {
+        if (mStepStateObserver != null) {
+            mStepStateObserver.onChangeStepExpandedState(this);
+        }
+    }
+
+    public void notifyStepActivatedStateChanged() {
+        if (mStepStateObserver != null) {
+            mStepStateObserver.onChangeStepActivatedState(this);
+        }
+    }
+
+    public void notifyStepCheckedStateChanged() {
+        if (mStepStateObserver != null) {
+            mStepStateObserver.onChangeStepCheckedState(this);
+        }
+    }
+
+    public void notifyStepStatusChanged(
+            boolean isExpandStateChanged,
+            boolean isActiveStateChanged,
+            boolean isCheckedStateChanged) {
+
+        if (mStepStateObserver != null) {
+            mStepStateObserver.onChangeStepStatus(this,
+                    isExpandStateChanged,
+                    isActiveStateChanged,
+                    isCheckedStateChanged);
+        }
     }
 
     /**

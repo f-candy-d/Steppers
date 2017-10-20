@@ -5,7 +5,7 @@ package com.f_candy_d.verticalsteppers;
  */
 
 /* Intentional package-private */
-interface StepStateManager {
+interface StepStateObserver {
     void onChangeStepExpandedState(Step step);
     void onChangeStepActivatedState(Step step);
     void onChangeStepCheckedState(Step step);

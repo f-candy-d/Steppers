@@ -75,37 +75,4 @@ public class VerticalStepperListView extends RecyclerView {
     public void beginPartialItemTransition() {
         beginPartialItemTransition(new AutoTransition());
     }
-
-    /**
-     * If you use this method, attach a Adapter to this RecyclerView manually.
-     */
-    public VerticalStepperAdapter build(@NonNull Context context, List<Step> steps) {
-        return build(context, steps, true);
-    }
-
-        /**
-         * Call this method to setup vertical steppers ui.
-         */
-    public VerticalStepperAdapter build(@NonNull Context context, List<Step> steps, boolean attachAdapterToRecyclerView) {
-        if (steps == null) {
-            steps = new ArrayList<>(0);
-        }
-
-        super.setLayoutManager(new LinearLayoutManager(context));
-        VerticalStepperAdapter adapter = new VerticalStepperAdapter(steps, this);
-        if (attachAdapterToRecyclerView) {
-            setAdapter(adapter);
-        }
-
-        return adapter;
-    }
-
-    /**
-     * Do not use this method
-     */
-    @Override
-    public void setLayoutManager(LayoutManager layout) {
-        throw new RuntimeException("" +
-                "Do not use this method, use VerticalStepperListView#build() method to setup vertical steppers");
-    }
 }

@@ -2,14 +2,11 @@ package com.f_candy_d.verticalsteppers;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -18,24 +15,12 @@ import java.util.List;
 
 public class VerticalStepperAdapter
         extends RecyclerView.Adapter<VerticalStepperAdapter.StepViewHolder>
-        implements StepStateManager, StepClickListener {
+        implements StepClickListener {
 
-    private List<Step> mSteps;
-    private VerticalStepperListView mParentListView;
+    private StepManager mParentManager;
 
-    public VerticalStepperAdapter(@NonNull List<Step> steps, @NonNull VerticalStepperListView parentListView) {
-        mParentListView = parentListView;
-        mSteps = new ArrayList<>(steps);
-        for (Step step : mSteps) {
-            step.setStepStateManager(this);
-        }
-
-        Collections.sort(mSteps, new Comparator<Step>() {
-            @Override
-            public int compare(Step step, Step t1) {
-                return Integer.valueOf(step.getOrder()).compareTo(t1.getOrder());
-            }
-        });
+    public VerticalStepperAdapter(@NonNull StepManager parentManager) {
+        mParentManager = parentManager;
     }
 
     /**
@@ -54,7 +39,7 @@ public class VerticalStepperAdapter
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_step, parent, false);
         StepViewHolder holder = new StepViewHolder(view, this);
-        Step step = mSteps.get(viewType);
+        Step step = mParentManager.getStepAt(viewType);
         holder.expandedContentVh = step.onCreateExpandedContentViewHolder(
                 holder.stepper.getContentViewContainer());
         holder.collapsedContentVh = step.onCreateCollapsedContentViewHolder(
@@ -73,7 +58,7 @@ public class VerticalStepperAdapter
 
     @Override
     public void onBindViewHolder(StepViewHolder holder, int position) {
-        Step step = mSteps.get(position);
+        Step step = mParentManager.getStepAt(position);
         holder.stepper.setTitle(step.getTitle());
         holder.stepper.setSubTitle(step.getSubTitle());
         if (step.useTextLabel()) {
@@ -95,7 +80,7 @@ public class VerticalStepperAdapter
             onBindViewHolder(holder, position);
         }
 
-        Step step = mSteps.get(position);
+        Step step = mParentManager.getStepAt(position);
 
         // Is step active
         if (payloads.size() == 0 ||
@@ -152,45 +137,31 @@ public class VerticalStepperAdapter
 
     @Override
     public int getItemCount() {
-        return mSteps.size();
-    }
-
-    private static final int INVALID_POSITION = RecyclerView.NO_POSITION;
-
-    private int findStepPositionByUid(int uid) {
-        int position = 0;
-        for (Step step : mSteps) {
-            if (step.getUid() == uid) {
-                return position;
-            }
-            ++position;
-        }
-
-        return INVALID_POSITION;
+        return mParentManager.getStepCount();
     }
 
     /**
-     * StepStateManager interface implementation
+     * UPDATE STEPPER STATUS
      * ---------- */
 
-    @Override
-    public void onChangeStepExpandedState(Step step) {
-        applyStepStateChanges(step, PAYLOAD_EXPAND_COLLAPSE);
+    /* Intentional package-private */
+    void onUpdateStepExpandedState(int position) {
+        applyStepStateUpdates(position, PAYLOAD_EXPAND_COLLAPSE);
     }
 
-    @Override
-    public void onChangeStepActivatedState(Step step) {
-        applyStepStateChanges(step, PAYLOAD_ACTIVATE_INACTIVATE);
+    /* Intentional package-private */
+    void onUpdateStepActivatedState(int position) {
+        applyStepStateUpdates(position, PAYLOAD_ACTIVATE_INACTIVATE);
     }
 
-    @Override
-    public void onChangeStepCheckedState(Step step) {
-        applyStepStateChanges(step, PAYLOAD_CHECK_UNCHECK);
+    /* Intentional package-private */
+    void onUpdateStepCheckedState(int position) {
+        applyStepStateUpdates(position, PAYLOAD_CHECK_UNCHECK);
     }
 
-    @Override
-    public void onChangeStepStatus(
-            Step step,
+    /* Intentional package-private */
+    void onUpdateStepStatus(
+            int position,
             boolean isExpandStateChanged,
             boolean isActiveStateChanged,
             boolean isCheckedStateChanged) {
@@ -206,32 +177,27 @@ public class VerticalStepperAdapter
             payloads.add(PAYLOAD_CHECK_UNCHECK);
         }
 
-        applyStepStateChanges(step, payloads.toArray());
+        applyStepStateUpdates(position, payloads.toArray());
     }
 
-    private void applyStepStateChanges(Step step, Object... payloads) {
-        mParentListView.beginPartialItemTransition();
-        int position = findStepPositionByUid(step.getUid());
-        // TODO; Use payload for better performance
-        if (position != INVALID_POSITION) {
-            if (payloads.length != 0) {
-                for (Object payload : payloads) {
-                    notifyItemChanged(position, payload);
-                }
-            } else {
-                notifyItemChanged(position);
+    private void applyStepStateUpdates(int position, Object... payloads) {
+        if (payloads.length != 0) {
+            for (Object payload : payloads) {
+                notifyItemChanged(position, payload);
             }
+        } else {
+            notifyItemChanged(position);
         }
     }
 
     /**
-     * STEP-CLICK-LISTENER INTERFACE IMPLEMENTATION
+     * INTERFACE IMPL -> STEP-CLICK-LISTENER
      * ---------- */
     @Override
     public void onStepClicked(StepViewHolder holder) {
         int adpPos = holder.getAdapterPosition();
-        if (0 <= adpPos && adpPos < mSteps.size()) {
-            mSteps.get(adpPos).onStepClick();
+        if (0 <= adpPos && adpPos < mParentManager.getStepCount()) {
+            mParentManager.getStepAt(adpPos).onStepClick();
         }
     }
 

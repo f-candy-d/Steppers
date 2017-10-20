@@ -12,36 +12,29 @@ import com.f_candy_d.verticalsteppers.Step;
 
 public class DummyStep extends Step {
 
-    private final int mOrder;
-
-    public DummyStep(int uid, int order) {
+    public DummyStep(int uid) {
         super(uid);
-        mOrder = order;
-    }
-
-    @Override
-    public int getOrder() {
-        return mOrder;
     }
 
     @Override
     public String getTitle() {
-        return "Step title at " + mOrder;
+        return "Step title at " + getUid();
     }
 
     @Override
     public String getSubTitle() {
-        return "Step sub-title at " + mOrder;
+        return "Step sub-title at " + getUid();
     }
 
     @Override
     public int getNumberLabel() {
-        return mOrder + 1;
+        return getUid() + 1;
     }
 
     @Override
     protected void onStepClick() {
         toggleAllStepStatus();
+        notifyStepStatusChanged(true, true, true);
     }
 
     @Override
