@@ -1,5 +1,7 @@
 package com.f_candy_d.verticalsteppers;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -7,21 +9,23 @@ import android.view.ViewGroup;
  * Created by daichi on 10/19/17.
  */
 
-abstract public class Step {
+abstract public class Step implements Constants {
 
     private final int mUid;
     private StepManager mParentManager;
-    private boolean mIsFocused;
-    private boolean mIsCompleted;
+    @NonNull private StepViewStatus mStepViewStatus;
 
     public Step(int uid) {
-        this(uid, false, false);
+        this(uid, null);
     }
 
-    public Step(int uid, boolean isFocused, boolean isCompleted) {
+    public Step(int uid, StepViewStatus status) {
         mUid = uid;
-        mIsFocused = isFocused;
-        mIsCompleted = isCompleted;
+        if (status != null) {
+            mStepViewStatus = new StepViewStatus(status);
+        } else {
+            mStepViewStatus = new StepViewStatus();
+        }
     }
 
     /**
@@ -61,33 +65,27 @@ abstract public class Step {
      * STEP STATE
      * ---------- */
 
-    public boolean isFocused() {
-        return mIsFocused;
+    @NonNull
+    public StepViewStatus getStepStatus() {
+        return mStepViewStatus;
     }
 
-    public void setFocused(boolean focused) {
-        mIsFocused = focused;
+    public void toggleExpandedState() {
+        mStepViewStatus.setExpanded(!mStepViewStatus.isExpanded());
     }
 
-    public boolean isCompleted() {
-        return mIsCompleted;
+    public void toggleActivatedState() {
+        mStepViewStatus.setActivated(!mStepViewStatus.isActivated());
     }
 
-    public void setCompleted(boolean completed) {
-        mIsCompleted = completed;
-    }
-
-    public void toggleFocusedState() {
-        setFocused(!isFocused());
-    }
-
-    public void toggleCompletedState() {
-        setCompleted(!isCompleted());
+    public void toggleCheckedState() {
+        mStepViewStatus.setChecked(!mStepViewStatus.isChecked());
     }
 
     public void toggleAllStatus() {
-        toggleFocusedState();
-        toggleCompletedState();
+        toggleExpandedState();
+        toggleActivatedState();
+        toggleCheckedState();
     }
 
     public void notifyStepStatusChanged() {
@@ -149,21 +147,69 @@ abstract public class Step {
 
     /**
      * Move to the next step from this step.
-     * Which is the next step depends on {@link StepperBehavior#getNextStepPosition(int)} method.
      */
-    public void moveToNextStep() {
+    public void moveToNextStep(StepViewStatus nextStepStatus) {
+
         if (mParentManager != null) {
-            mParentManager.moveToNextStep(this);
+            mParentManager.moveToNextStep(this, nextStepStatus);
         }
     }
 
     /**
      * Move to the previous step from this step.
-     * Which is the previous step depends on {@link StepperBehavior#getPreviousStepPosition(int)} method.
      */
-    public void moveToPreviousStep() {
+    public void moveToPreviousStep(StepViewStatus previousStepStatus) {
+
         if (mParentManager != null) {
-            mParentManager.moveToPreviousStep(this);
+            mParentManager.moveToPreviousStep(this, previousStepStatus);
         }
+    }
+
+    /**
+     * UTILS
+     * ---------- */
+
+    @Nullable
+    public StepViewStatus getNextStepStatus() {
+        if (mParentManager == null) return null;
+        int position = mParentManager.getStepPositionForUid(getUid());
+        if (position == INVALID_POSITION) return null;
+        position += 1;
+        if (0 <= position && position < mParentManager.getStepCount()) {
+            StepViewStatus status = mParentManager.getStepViewStatusAt(position);
+            return new StepViewStatus(status);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public StepViewStatus getPreviousStepStatus() {
+        if (mParentManager == null) return null;
+        int position = mParentManager.getStepPositionForUid(getUid());
+        if (position == INVALID_POSITION) return null;
+        position -= 1;
+        if (0 <= position && position < mParentManager.getStepCount()) {
+            StepViewStatus status = mParentManager.getStepViewStatusAt(position);
+            return new StepViewStatus(status);
+        }
+
+        return null;
+    }
+
+    public int getPosition() {
+        if (mParentManager == null) return INVALID_POSITION;
+        return mParentManager.getStepPositionForUid(getUid());
+    }
+
+    public boolean isFirstStep() {
+        int position = getPosition();
+        return (position != INVALID_POSITION && position == 0);
+    }
+
+    public boolean isLastStep() {
+        int position = getPosition();
+        return (position != INVALID_POSITION &&
+                position == mParentManager.getStepCount() - 1);
     }
 }

@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.f_candy_d.verticalsteppers.Step;
+import com.f_candy_d.verticalsteppers.StepViewStatus;
 
 /**
  * Created by daichi on 10/20/17.
@@ -51,8 +52,18 @@ public class DemoStep extends Step {
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            step.setCompleted(true);
-                            step.moveToNextStep();
+                            if (!step.isLastStep()) {
+                                step.getStepStatus().setExpanded(false);
+                                step.getStepStatus().setActivated(true);
+                                step.getStepStatus().setChecked(true);
+                                StepViewStatus next = step.getNextStepStatus();
+                                if (next != null) {
+                                    next.setExpanded(true);
+                                    next.setActivated(true);
+                                    next.setChecked(false);
+                                }
+                                step.moveToNextStep(next);
+                            }
                         }
                     });
 
@@ -60,8 +71,18 @@ public class DemoStep extends Step {
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            step.setCompleted(false);
-                            step.moveToPreviousStep();
+                            if (!step.isFirstStep()) {
+                                step.getStepStatus().setExpanded(false);
+                                step.getStepStatus().setActivated(false);
+                                step.getStepStatus().setChecked(false);
+                                StepViewStatus prev = step.getPreviousStepStatus();
+                                if (prev != null) {
+                                    prev.setExpanded(true);
+                                    prev.setActivated(true);
+                                    prev.setChecked(false);
+                                }
+                                step.moveToPreviousStep(prev);
+                            }
                         }
                     });
         }

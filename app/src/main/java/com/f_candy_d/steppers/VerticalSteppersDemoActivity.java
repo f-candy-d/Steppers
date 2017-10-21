@@ -19,5 +19,11 @@ public class VerticalSteppersDemoActivity extends AppCompatActivity {
             manager.addStep(new DemoStep(i));
         }
         manager.build(this, stepperListView);
+
+        // Initial status of the first step
+        manager.getStepAt(0).getStepStatus().setActivated(true);
+        manager.getStepAt(0).getStepStatus().setExpanded(true);
+        manager.getStepAt(0).getStepStatus().setChecked(false);
+        manager.notifyStepStatusChanged(0);
     }
 }

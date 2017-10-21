@@ -3,10 +3,7 @@ package com.f_candy_d.verticalsteppers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +16,10 @@ public class StepManager implements Constants {
 
     private VerticalStepperListView mStepperListView;
     private VerticalStepperAdapter mStepperAdapter;
-    private List<Pair<Step, StepViewStatus>> mStepInfoList;
-    // Non-null
-    private StepperBehavior mStepperBehavior;
+    private List<Step> mSteps;
 
     public StepManager() {
-        mStepInfoList = new ArrayList<>();
-        setStepperBehavior(new DefaultStepperBehavior());
+        mSteps = new ArrayList<>();
     }
 
     private boolean mIsBuildAlreadyFinished = false;
@@ -37,20 +31,14 @@ public class StepManager implements Constants {
     public void build(Context context, VerticalStepperListView stepperListView) {
         if (mIsBuildAlreadyFinished) return;
 
-        for (Pair<Step, StepViewStatus> stepInfo : mStepInfoList) {
-            stepInfo.first.setParentManager(this);
+        for (Step step : mSteps) {
+            step.setParentManager(this);
         }
 
         mStepperListView = stepperListView;
         mStepperAdapter = new VerticalStepperAdapter(this);
         mStepperListView.setLayoutManager(new LinearLayoutManager(context));
         mStepperListView.setAdapter(mStepperAdapter);
-
-        int initialPos = mStepperBehavior.getInitialPosition();
-        if (initialPos != INVALID_POSITION) {
-            setStepFocusedAt(initialPos, true);
-            onStepStatusChanged(initialPos);
-        }
 
         mIsBuildAlreadyFinished = true;
     }
@@ -71,17 +59,12 @@ public class StepManager implements Constants {
         return mIsBuildAlreadyFinished;
     }
 
-    public void setStepperBehavior(@NonNull StepperBehavior stepperBehavior) {
-        mStepperBehavior = stepperBehavior;
-        mStepperBehavior.setParentManager(this);
-    }
-
     /**
      * ADD STEP
      * ---------- */
 
     public void addStep(@NonNull Step step) {
-        addStep(mStepInfoList.size(), step);
+        addStep(mSteps.size(), step);
     }
 
     public void addStep(int position, @NonNull Step step) {
@@ -89,26 +72,22 @@ public class StepManager implements Constants {
             throw new IllegalStateException(
                     "Steps must be added to StepManager before call #build() method");
         }
-        mStepInfoList.add(position, new Pair<>(step, new StepViewStatus()));
+        mSteps.add(position, step);
     }
 
     /**
-     * MANAGE STEP'S STATE
+     * MANAGE STEP'S STATE CHANGE
      * ---------- */
-
-    public void setStepFocusedAt(int position, boolean isStepFocused) {
-        getStepAt(position).setFocused(isStepFocused);
-    }
-
-    public void setStepCompletedAt(int position, boolean isStepCompleted) {
-        getStepAt(position).setCompleted(isStepCompleted);
-    }
 
     /**
      * Call this method when status of a step change to apply updates to step view.
      */
     public void notifyStepStatusChanged(Step step) {
         onStepStatusChanged(step);
+    }
+
+    public void notifyStepStatusChanged(int position) {
+        onStepStatusChanged(position);
     }
 
     public void notifyManyStepsStatusChanged(int... positions) {
@@ -129,37 +108,40 @@ public class StepManager implements Constants {
     private void onManyStepsStatusChanged(int... positions) {
         mStepperListView.beginPartialItemTransition();
         for (int position : positions) {
-            invalidateStepViewStatus(position);
             mStepperAdapter.onUpdateStepViewStatus(position);
         }
     }
 
-    public void moveToNextStep(Step fromStep) {
-        int fromPos = getStepPositionForUid(fromStep.getUid());
-        int nextPos = mStepperBehavior.getNextStepPosition(fromPos);
-        if (nextPos < 0 || getStepCount() <= nextPos) {
-            throw new IndexOutOfBoundsException("Invalid position");
+    /**
+     * ACTIVITY
+     * ---------- */
+
+    public void moveToNextStep(@NonNull Step fromStep, StepViewStatus nextStepStatus) {
+        int nextPos = getStepPositionForUid(fromStep.getUid()) + 1;
+        if (0 <= nextPos && nextPos < getStepCount()) {
+            Step nextStep = getStepAt(nextPos);
+            if (nextStepStatus != null) {
+                nextStep.getStepStatus().set(nextStepStatus);
+            }
+            onManyStepsStatusChanged(nextPos - 1, nextPos);
+
+        } else {
+            onStepStatusChanged(nextPos - 1);
         }
-
-        if (fromPos == nextPos) return;
-
-        setStepFocusedAt(fromPos, false);
-        setStepFocusedAt(nextPos, true);
-        onManyStepsStatusChanged(fromPos, nextPos);
     }
 
-    public void moveToPreviousStep(Step fromStep) {
-        int fromPos = getStepPositionForUid(fromStep.getUid());
-        int prevPos = mStepperBehavior.getPreviousStepPosition(fromPos);
-        if (prevPos < 0 || getStepCount() <= prevPos) {
-            throw new IndexOutOfBoundsException("Invalid position");
+    public void moveToPreviousStep(@NonNull Step fromStep, StepViewStatus previousStepStatus) {
+        int prevPos = getStepPositionForUid(fromStep.getUid()) - 1;
+        if (0 <= prevPos && prevPos < getStepCount()) {
+            Step prevStep = getStepAt(prevPos);
+            if (previousStepStatus != null) {
+                prevStep.getStepStatus().set(previousStepStatus);
+            }
+            onManyStepsStatusChanged(prevPos, prevPos + 1);
+
+        } else {
+            onStepStatusChanged(prevPos + 1);
         }
-
-        if (fromPos == prevPos) return;
-
-        setStepFocusedAt(prevPos, true);
-        setStepFocusedAt(fromPos, false);
-        onManyStepsStatusChanged(fromPos, prevPos);
     }
 
     /**
@@ -167,7 +149,7 @@ public class StepManager implements Constants {
      * ---------- */
 
     public Step getStepAt(int position) {
-        return mStepInfoList.get(position).first;
+        return mSteps.get(position);
     }
 
     @Nullable
@@ -182,8 +164,8 @@ public class StepManager implements Constants {
 
     public int getStepPositionForUid(int uid) {
         int position = 0;
-        for (Pair<Step, StepViewStatus> stepInfo : mStepInfoList) {
-            if (stepInfo.first.getUid() == uid) {
+        for (Step step : mSteps) {
+            if (step.getUid() == uid) {
                 return position;
             }
             ++position;
@@ -193,42 +175,22 @@ public class StepManager implements Constants {
     }
 
     public int getStepCount() {
-        return mStepInfoList.size();
+        return mSteps.size();
     }
 
     /* Intentional package-private */
     StepViewStatus getStepViewStatusAt(int position) {
-        return mStepInfoList.get(position).second;
+        return mSteps.get(position).getStepStatus();
     }
 
     @Nullable
     private StepViewStatus getStepViewStatusForUid(int uid) {
-        for (Pair<Step, StepViewStatus> stepInfo : mStepInfoList) {
-            if (stepInfo.first.getUid() == uid) {
-                return stepInfo.second;
+        for (Step step : mSteps) {
+            if (step.getUid() == uid) {
+                return step.getStepStatus();
             }
         }
 
         return null;
-    }
-
-    private void invalidateStepViewStatus(int position) {
-        Step step = getStepAt(position);
-        StepViewStatus newStatus;
-
-        if (step.isFocused()) {
-            newStatus = (step.isCompleted())
-                    ? mStepperBehavior.getFocusedAndCompletedStepViewStatus()
-                    : mStepperBehavior.getFocusedAndNotCompletedStepViewStatus();
-        } else {
-            newStatus = (step.isCompleted())
-                    ? mStepperBehavior.getNotFocusedAndCompletedStepViewStatus()
-                    : mStepperBehavior.getNotFocusedAndNotCompletedStepViewStatus();
-        }
-
-        StepViewStatus currentStatus = getStepViewStatusAt(position);
-        if (currentStatus != null) {
-            currentStatus.set(newStatus);
-        }
     }
 }

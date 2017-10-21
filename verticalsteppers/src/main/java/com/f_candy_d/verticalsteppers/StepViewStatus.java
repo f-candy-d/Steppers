@@ -1,34 +1,58 @@
 package com.f_candy_d.verticalsteppers;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by daichi on 10/21/17.
  */
 
 public class StepViewStatus {
 
-    private boolean mPrevIsExpanded;
-    private boolean mPrevIsActivated;
-    private boolean mPrevIsChecked;
-    private boolean mIsExpanded;
-    private boolean mIsActivated;
-    private boolean mIsChecked;
+    private static class Status {
 
-    public StepViewStatus() {
-        mIsExpanded = mPrevIsExpanded = false;
-        mIsActivated = mPrevIsActivated = false;
-        mIsChecked = mPrevIsChecked = false;
+        private boolean isExpanded;
+        private boolean isActivated;
+        private boolean isChecked;
+
+        Status() {}
+
+        Status(Status source) {
+            set(source);
+        }
+
+        void set(Status source) {
+            isExpanded = source.isExpanded;
+            isActivated = source.isActivated;
+            isChecked = source.isChecked;
+        }
     }
 
-    public boolean isDirty() {
+    @NonNull private Status mPrevStatus;
+    @NonNull private Status mStatus;
+
+    public StepViewStatus() {
+        mStatus = new Status();
+        mStatus.isExpanded = false;
+        mStatus.isActivated = false;
+        mStatus.isChecked = false;
+        mPrevStatus = new Status(mStatus);
+    }
+
+    public StepViewStatus(StepViewStatus source) {
+        mStatus = new Status(source.mStatus);
+        mPrevStatus = new Status(source.mPrevStatus);
+    }
+
+    /* Intentional package-private */
+    boolean isDirty() {
         return isExpandedStateChanged() ||
                 isCheckedStateChanged() ||
                 isActivatedStateChanged();
     }
 
-    public void refresh() {
-        mPrevIsExpanded = mIsExpanded;
-        mPrevIsActivated = mIsActivated;
-        mPrevIsChecked = mIsChecked;
+    /* Intentional package-private */
+    void refresh() {
+        mPrevStatus.set(mStatus);
     }
 
     public void set(StepViewStatus source) {
@@ -38,41 +62,38 @@ public class StepViewStatus {
     }
 
     public boolean isExpanded() {
-        return mIsExpanded;
+        return mStatus.isExpanded;
     }
 
     public void setExpanded(boolean expanded) {
-        mPrevIsExpanded = mIsExpanded;
-        mIsExpanded = expanded;
+        mStatus.isExpanded = expanded;
     }
 
     public boolean isActivated() {
-        return mIsActivated;
+        return mStatus.isActivated;
     }
 
     public void setActivated(boolean activated) {
-        mPrevIsActivated = mIsActivated;
-        mIsActivated = activated;
+        mStatus.isActivated = activated;
     }
 
     public boolean isChecked() {
-        return mIsChecked;
+        return mStatus.isChecked;
     }
 
     public void setChecked(boolean checked) {
-        mPrevIsChecked = mIsChecked;
-        mIsChecked = checked;
+        mStatus.isChecked = checked;
     }
 
     public boolean isExpandedStateChanged() {
-        return mPrevIsExpanded != mIsExpanded;
+        return mPrevStatus.isExpanded != mStatus.isExpanded;
     }
 
     public boolean isActivatedStateChanged() {
-        return mPrevIsActivated != mIsActivated;
+        return mPrevStatus.isActivated != mStatus.isActivated;
     }
 
     public boolean isCheckedStateChanged() {
-        return mPrevIsChecked != mIsChecked;
+        return mPrevStatus.isChecked != mStatus.isChecked;
     }
 }
