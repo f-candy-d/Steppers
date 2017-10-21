@@ -9,29 +9,19 @@ import android.view.ViewGroup;
 
 abstract public class Step {
 
-    // Uid must be a non-negative integer
     private final int mUid;
-    private StepStateObserver mStepStateObserver;
-
-    // Step status
-    private boolean mIsStepExpanded;
-    private boolean mIsStepActivated;
-    private boolean mIsStepChecked;
+    private StepManager mParentManager;
+    private boolean mIsFocused;
+    private boolean mIsCompleted;
 
     public Step(int uid) {
-        this(uid, false, false, false);
+        this(uid, false, false);
     }
 
-    public Step(int uid, boolean isStepExpanded, boolean isStepActivated, boolean isStepChecked) {
-        if (uid < 0) {
-            throw new IllegalArgumentException(
-                    "'uid' must be a non-negative integer, but passed uid is " + uid);
-        }
-
+    public Step(int uid, boolean isFocused, boolean isCompleted) {
         mUid = uid;
-        mIsStepExpanded = isStepExpanded;
-        mIsStepActivated = isStepActivated;
-        mIsStepChecked = isStepChecked;
+        mIsFocused = isFocused;
+        mIsCompleted = isCompleted;
     }
 
     /**
@@ -39,8 +29,8 @@ abstract public class Step {
      * ---------- */
 
     /* Intentional package-private */
-    void setStepStateObserver(StepStateObserver stepStateObserver) {
-        mStepStateObserver = stepStateObserver;
+    void setParentManager(StepManager parentManager) {
+        mParentManager = parentManager;
     }
 
     public int getUid() {
@@ -71,90 +61,38 @@ abstract public class Step {
      * STEP STATE
      * ---------- */
 
-    public boolean isStepExpanded() {
-        return mIsStepExpanded;
+    public boolean isFocused() {
+        return mIsFocused;
     }
 
-    public boolean isStepActivated() {
-        return mIsStepActivated;
+    public void setFocused(boolean focused) {
+        mIsFocused = focused;
     }
 
-    public boolean isStepChecked() {
-        return mIsStepChecked;
+    public boolean isCompleted() {
+        return mIsCompleted;
     }
 
-    public void setStepExpanded(boolean isStepExpanded) {
-        mIsStepExpanded = isStepExpanded;
+    public void setCompleted(boolean completed) {
+        mIsCompleted = completed;
     }
 
-    public void setStepActivated(boolean isStepActivated) {
-        mIsStepActivated = isStepActivated;
+    public void toggleFocusedState() {
+        setFocused(!isFocused());
     }
 
-    public void setStepChecked(boolean isStepChecked) {
-        mIsStepChecked = isStepChecked;
+    public void toggleCompletedState() {
+        setCompleted(!isCompleted());
     }
 
-    public void setStepStatus(
-            boolean isStepExpanded,
-            boolean isStepActivated,
-            boolean isStepChecked) {
-
-        setStepExpanded(isStepExpanded);
-        setStepActivated(isStepActivated);
-        setStepChecked(isStepChecked);
+    public void toggleAllStatus() {
+        toggleFocusedState();
+        toggleCompletedState();
     }
 
-    public void toggleAllStepStatus() {
-        setStepStatus(!isStepExpanded(), !isStepActivated(), !isStepChecked());
-    }
-
-    public void toggleIsStepExpanded() {
-        setStepExpanded(!isStepExpanded());
-    }
-
-    public void toggleIsStepActivated() {
-        setStepActivated(!isStepActivated());
-    }
-
-    public void toggleIsStepChecked() {
-        setStepChecked(!isStepChecked());
-    }
-
-    /**
-     * NOTIFY CHANGING STATE TO OBSERVER
-     *
-     * Call the following methods to update a certain stepper view.
-     * ---------- */
-
-    public void notifyStepExpandedStateChanged() {
-        if (mStepStateObserver != null) {
-            mStepStateObserver.onStepExpandedStateChanged(this);
-        }
-    }
-
-    public void notifyStepActivatedStateChanged() {
-        if (mStepStateObserver != null) {
-            mStepStateObserver.onStepActivatedStateChanged(this);
-        }
-    }
-
-    public void notifyStepCheckedStateChanged() {
-        if (mStepStateObserver != null) {
-            mStepStateObserver.onStepCheckedStateChanged(this);
-        }
-    }
-
-    public void notifyStepStatusChanged(
-            boolean isExpandStateChanged,
-            boolean isActiveStateChanged,
-            boolean isCheckedStateChanged) {
-
-        if (mStepStateObserver != null) {
-            mStepStateObserver.onStepStatusChanged(this,
-                    isExpandStateChanged,
-                    isActiveStateChanged,
-                    isCheckedStateChanged);
+    public void notifyStepStatusChanged() {
+        if (mParentManager != null) {
+            mParentManager.notifyStepStatusChanged(this);
         }
     }
 
@@ -204,4 +142,28 @@ abstract public class Step {
      * @return {@link Step#onStepClick()} will be not called if return TRUE.
      */
     protected boolean onStepLongClick() { return false; }
+
+    /**
+     * ACTIVITY
+     * ---------- */
+
+    /**
+     * Move to the next step from this step.
+     * Which is the next step depends on {@link StepperBehavior#getNextStepPosition(int)} method.
+     */
+    public void moveToNextStep() {
+        if (mParentManager != null) {
+            mParentManager.moveToNextStep(this);
+        }
+    }
+
+    /**
+     * Move to the previous step from this step.
+     * Which is the previous step depends on {@link StepperBehavior#getPreviousStepPosition(int)} method.
+     */
+    public void moveToPreviousStep() {
+        if (mParentManager != null) {
+            mParentManager.moveToPreviousStep(this);
+        }
+    }
 }

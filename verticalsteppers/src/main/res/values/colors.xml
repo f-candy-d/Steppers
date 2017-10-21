@@ -9,7 +9,7 @@
     <color name="vertical_stepper_inactive_sub_title">#949494</color>
     <!-- Circle (bg) -->
     <color name="vertical_stepper_active_circle_background">@color/google_blue</color>
-    <color name="vertical_stepper_inactive_circle_background">#616161</color>
+    <color name="vertical_stepper_inactive_circle_background">#BDBDBD</color>
     <!-- Circle (text label) -->
     <color name="vertical_stepper_circle_text_label_tint">#FFFFFF</color>
     <!-- Circle (icon label) -->

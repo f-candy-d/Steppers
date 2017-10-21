@@ -2,6 +2,7 @@ package com.f_candy_d.verticalsteppers;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,18 +76,19 @@ public class VerticalStepperAdapter
 
     @Override
     public void onBindViewHolder(StepViewHolder holder, int position, List<Object> payloads) {
+        Log.d("Mylog", "payloads -> " + payloads.size());
         // On full bind
         if (payloads.size() == 0) {
             onBindViewHolder(holder, position);
         }
 
-        Step step = mParentManager.getStepAt(position);
+        StepViewStatus stepViewStatus = mParentManager.getStepViewStatusAt(position);
 
         // Is step active
         if (payloads.size() == 0 ||
                 payloads.contains(PAYLOAD_ACTIVATE_INACTIVATE)) {
 
-            if (step.isStepActivated()) {
+            if (stepViewStatus.isActivated()) {
                 holder.stepper.activateStep();
             } else {
                 holder.stepper.inactivateStep();
@@ -97,7 +99,7 @@ public class VerticalStepperAdapter
         if (payloads.size() == 0 ||
                 payloads.contains(PAYLOAD_CHECK_UNCHECK)) {
 
-            if (step.isStepChecked()) {
+            if (stepViewStatus.isChecked()) {
                 holder.stepper.checkStep();
             } else {
                 holder.stepper.uncheckStep();
@@ -108,7 +110,7 @@ public class VerticalStepperAdapter
         if (payloads.size() == 0
                 || payloads.contains(PAYLOAD_EXPAND_COLLAPSE)) {
 
-            if (step.isStepExpanded()) {
+            if (stepViewStatus.isExpanded()) {
                 if (holder.hasExpandedContentView()) {
                     holder.stepper.getContentViewContainer().setVisibility(View.VISIBLE);
                     holder.getExpandedContentView().setVisibility(View.VISIBLE);
@@ -145,48 +147,26 @@ public class VerticalStepperAdapter
      * ---------- */
 
     /* Intentional package-private */
-    void onUpdateStepExpandedState(int position) {
-        applyStepStateUpdates(position, PAYLOAD_EXPAND_COLLAPSE);
-    }
-
-    /* Intentional package-private */
-    void onUpdateStepActivatedState(int position) {
-        applyStepStateUpdates(position, PAYLOAD_ACTIVATE_INACTIVATE);
-    }
-
-    /* Intentional package-private */
-    void onUpdateStepCheckedState(int position) {
-        applyStepStateUpdates(position, PAYLOAD_CHECK_UNCHECK);
-    }
-
-    /* Intentional package-private */
-    void onUpdateStepStatus(
-            int position,
-            boolean isExpandStateChanged,
-            boolean isActiveStateChanged,
-            boolean isCheckedStateChanged) {
-
+    void onUpdateStepViewStatus(int position) {
+        StepViewStatus status = mParentManager.getStepViewStatusAt(position);
         ArrayList<Integer> payloads = new ArrayList<>();
-        if (isExpandStateChanged) {
+
+        if (status.isExpandedStateChanged()) {
             payloads.add(PAYLOAD_EXPAND_COLLAPSE);
         }
-        if (isActiveStateChanged) {
+        if (status.isActivatedStateChanged()) {
             payloads.add(PAYLOAD_ACTIVATE_INACTIVATE);
         }
-        if (isCheckedStateChanged) {
+        if (status.isCheckedStateChanged()) {
             payloads.add(PAYLOAD_CHECK_UNCHECK);
         }
 
-        applyStepStateUpdates(position, payloads.toArray());
-    }
+        status.refresh();
 
-    private void applyStepStateUpdates(int position, Object... payloads) {
-        if (payloads.length != 0) {
+        if (payloads.size() != 0) {
             for (Object payload : payloads) {
                 notifyItemChanged(position, payload);
             }
-        } else {
-            notifyItemChanged(position);
         }
     }
 
